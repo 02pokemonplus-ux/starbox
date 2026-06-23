@@ -1,0 +1,2232 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日本星巴克日語學習工具</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #00704A;
+    --navy-deep: #1E3932;
+    --steel: #4E8474;
+    --bg: #F5F4F0;
+    --card: #FFFFFF;
+    --card-alt: #E7F1EA;
+    --line: #DCE6DF;
+    --ink: #24282E;
+    --ink-soft: #6B7280;
+    --muted: #9CA3AF;
+    --accent: #00704A;
+    --accent-soft: #D4E9DD;
+    --on-accent: #FFFFFF;
+    --r-sm: 10px;
+    --r-md: 16px;
+    --r-lg: 22px;
+    --r-pill: 999px;
+  }
+
+  html[data-theme="dark"] {
+    --navy: #4FAE8C;
+    --navy-deep: #3C8F71;
+    --steel: #8FB7A7;
+    --bg: #1B1E1C;
+    --card: #242823;
+    --card-alt: #2E332C;
+    --line: #3A4039;
+    --ink: #E5E7E2;
+    --ink-soft: #A8AEA4;
+    --muted: #7C8278;
+    --accent: #4FAE8C;
+    --accent-soft: #2A3D33;
+    --on-accent: #16201A;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Noto Sans TC", "Noto Serif JP", serif;
+    min-height: 100vh;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+
+  /* ---------- Header ---------- */
+  .topbar {
+    background: var(--navy);
+    color: var(--on-accent);
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .topbar-left { display: flex; align-items: baseline; gap: 10px; }
+
+  .topbar-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .topbar-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 0.02em;
+  }
+
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+
+  .theme-toggle {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-pill);
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.08);
+    color: #FFFFFF;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .theme-toggle:hover {
+    background: rgba(255,255,255,0.16);
+    border-color: rgba(255,255,255,0.4);
+  }
+  .theme-toggle svg { width: 17px; height: 17px; }
+
+  /* ---------- Tab nav ---------- */
+  .tabbar {
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .tab-item {
+    flex: 1;
+    text-align: center;
+    padding: 16px 10px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+    user-select: none;
+  }
+  .tab-item:hover { color: var(--ink); }
+  .tab-item.active {
+    color: var(--ink);
+    font-weight: 700;
+    border-bottom-color: var(--navy);
+  }
+
+  .subtabbar {
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    overflow-x: auto;
+  }
+  .subtab-item {
+    padding: 11px 16px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    user-select: none;
+  }
+  .subtab-item:hover { color: var(--ink); }
+  .subtab-item.active {
+    color: var(--navy);
+    font-weight: 700;
+    border-bottom-color: var(--navy);
+  }
+
+  /* ---------- Inner tab ---------- */
+  .inner-tabbar {
+    display: inline-flex;
+    gap: 4px;
+    background: var(--card-alt);
+    border-radius: var(--r-pill);
+    padding: 4px;
+    margin-bottom: 22px;
+  }
+  .inner-tab-item {
+    padding: 8px 20px;
+    border-radius: var(--r-pill);
+    font-size: 13px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .inner-tab-item:hover { color: var(--ink); }
+  .inner-tab-item.active {
+    background: var(--navy);
+    color: var(--on-accent);
+    font-weight: 700;
+  }
+
+  .inner-view { display: none; }
+  .inner-view.active { display: block; }
+
+  /* ---------- Main ---------- */
+  .main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 22px 24px 80px;
+  }
+
+  .section-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  /* ---------- View switching ---------- */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ====== STUDY (flashcard) view ====== */
+  .study-layout {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .card-panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 48px 40px;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .card-index-tag {
+    position: absolute;
+    top: 20px;
+    left: 22px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .card-jp {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+
+  .card-kana {
+    font-size: 15px;
+    color: var(--ink-soft);
+    margin-bottom: 18px;
+  }
+
+  .card-zh {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--navy);
+    min-height: 30px;
+  }
+
+  .card-hint {
+    margin-top: 22px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .card-nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 18px;
+  }
+
+  .nav-btn {
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink-soft);
+    width: 38px;
+    height: 38px;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .nav-btn:hover { border-color: var(--navy); color: var(--navy); }
+
+  .nav-counter {
+    font-size: 13px;
+    color: var(--muted);
+    min-width: 56px;
+    text-align: center;
+  }
+
+  .shuffle-btn {
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink-soft);
+    padding: 0 18px;
+    height: 38px;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .shuffle-btn:hover { border-color: var(--navy); color: var(--navy); }
+
+  /* ====== Reference table view ====== */
+  .shape-filter-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .shape-filter-item {
+    padding: 9px 20px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink-soft);
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .shape-filter-item:hover { border-color: var(--navy); color: var(--ink); }
+  .shape-filter-item.active {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: var(--on-accent);
+    font-weight: 700;
+  }
+
+  .ref-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .ref-cell {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 16px 20px;
+    min-height: 56px;
+    font-size: 15px;
+    color: var(--ink);
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .ref-cell:hover { border-color: var(--navy); }
+  .ref-cell-jp { font-weight: 700; }
+  .ref-cell.revealed {
+    background: var(--card-alt);
+    border-color: var(--navy);
+  }
+  .ref-cell-kana { font-size: 13px; color: var(--ink-soft); }
+  .ref-cell-zh { font-size: 16px; font-weight: 700; color: var(--ink); }
+
+  /* ====== Quiz view ====== */
+  .quiz-wrap { max-width: 560px; margin: 0 auto; }
+
+  .study-toolbar-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .study-toolbar-row .inner-tabbar {
+    margin-bottom: 0;
+  }
+  .direction-toggle-btn {
+    padding: 8px 18px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--navy);
+    background: var(--card);
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+  }
+  .direction-toggle-btn:hover { background: var(--accent-soft); }
+
+  .quiz-progress {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .quiz-panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 40px 32px;
+    text-align: center;
+    margin-bottom: 22px;
+  }
+  .quiz-question-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .quiz-jp { font-size: 28px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .quiz-kana { font-size: 14px; color: var(--ink-soft); }
+
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .quiz-option {
+    padding: 16px 12px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    font-size: 14px;
+    border-radius: var(--r-md);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .quiz-option:hover:not(:disabled) { border-color: var(--navy); }
+  .quiz-option.correct { background: #DCEADD; border-color: #4E7D54; color: #294A2D; }
+  .quiz-option.wrong { background: #F1DCDC; border-color: #97393B; color: #6B2829; }
+  .quiz-option:disabled { cursor: default; }
+
+  .quiz-feedback {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--navy);
+    min-height: 18px;
+  }
+
+  .quiz-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  .quiz-score { font-size: 13px; color: var(--ink-soft); }
+  .quiz-score strong { color: var(--navy); }
+
+  .next-btn {
+    padding: 9px 22px;
+    border-radius: var(--r-pill);
+    background: var(--navy);
+    color: var(--on-accent);
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .next-btn:disabled { opacity: 0.35; cursor: default; }
+
+  .quiz-result { text-align: center; padding: 50px 30px; }
+  .quiz-result .big-score { font-size: 46px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .quiz-result .result-msg { color: var(--ink-soft); font-size: 14px; margin-bottom: 22px; }
+  .restart-btn {
+    padding: 10px 28px;
+    border-radius: var(--r-pill);
+    background: var(--navy);
+    color: var(--on-accent);
+    border: none;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ====== Confusables view ====== */
+  .confuse-row {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 18px 22px;
+    margin-bottom: 12px;
+  }
+  .confuse-title { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+  .confuse-items { display: flex; gap: 12px; flex-wrap: wrap; }
+  .confuse-pill {
+    background: var(--card-alt);
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+  .confuse-pill .k { font-weight: 700; color: var(--ink); }
+  .confuse-pill .z { font-size: 12px; color: var(--muted); margin-left: 6px; }
+
+  /* ====== Phrase view ====== */
+  .phrase-toolbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 4px;
+  }
+  .phrase-toggle-group {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .phrase-toggle-btn {
+    padding: 7px 16px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink-soft);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .phrase-toggle-btn:hover { border-color: var(--navy); color: var(--ink); }
+  .phrase-toggle-btn[data-on="true"] {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: var(--on-accent);
+    font-weight: 700;
+  }
+
+  .scene-tabbar {
+    display: flex;
+    gap: 8px;
+    margin: 0 auto 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 680px;
+  }
+  .scene-tab-item {
+    padding: 9px 20px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink-soft);
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .scene-tab-item:hover { border-color: var(--navy); color: var(--ink); }
+  .scene-tab-item.active {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: var(--on-accent);
+    font-weight: 700;
+  }
+
+  .scenario-tabbar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 0 auto 16px;
+    max-width: 680px;
+  }
+  .scenario-tab-item {
+    padding: 9px 14px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink-soft);
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .scenario-tab-item:hover { border-color: var(--navy); color: var(--ink); }
+  .scenario-tab-item.active {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: var(--on-accent);
+    font-weight: 700;
+  }
+
+  .playall-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    max-width: 680px;
+    margin: 0 auto 18px;
+  }
+  .playall-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 22px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--navy);
+    background: var(--card);
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .playall-btn:hover { background: var(--accent-soft); }
+  .playall-btn.active {
+    background: var(--navy);
+    color: var(--on-accent);
+  }
+  .playall-btn svg { width: 14px; height: 14px; }
+  .playall-hint {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .phrase-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .phrase-row { display: flex; gap: 12px; align-items: flex-start; transition: background 0.2s ease; }
+  .phrase-row.staff { justify-content: flex-start; }
+  .phrase-row.customer { justify-content: flex-end; }
+  .phrase-row.speaking .phrase-bubble {
+    border-color: var(--navy);
+    box-shadow: 0 0 0 2px var(--accent-soft);
+  }
+
+  .speaker-tag {
+    flex-shrink: 0;
+    width: 52px;
+    text-align: center;
+    font-size: 11px;
+    padding: 4px 0;
+    border-radius: var(--r-pill);
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .phrase-row.staff .speaker-tag {
+    background: var(--accent-soft);
+    color: var(--navy);
+  }
+  .phrase-row.customer .speaker-tag {
+    background: var(--card-alt);
+    color: var(--ink-soft);
+    order: 2;
+  }
+
+  .phrase-bubble {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 14px 18px;
+    max-width: 480px;
+  }
+  .phrase-row.staff .phrase-bubble {
+    border-top-left-radius: 4px;
+  }
+  .phrase-row.customer .phrase-bubble {
+    border-top-right-radius: 4px;
+    background: var(--card-alt);
+  }
+
+  .phrase-jp-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .phrase-jp {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.6;
+  }
+
+  .phrase-jp .furi {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .phrase-jp .furi::after {
+    content: attr(data-kana);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    margin-bottom: 6px;
+    background: var(--navy);
+    color: var(--on-accent);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 9px;
+    border-radius: var(--r-sm);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .phrase-jp .furi:hover::after,
+  .phrase-jp .furi.show-tooltip::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .speak-btn {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink-soft);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .speak-btn:hover { border-color: var(--navy); color: var(--navy); }
+  .speak-btn.playing { background: var(--navy); border-color: var(--navy); color: var(--on-accent); }
+  .speak-btn svg { width: 13px; height: 13px; }
+
+  .phrase-zh { font-size: 13px; color: var(--ink-soft); display: none; font-family: "Noto Sans TC", sans-serif; }
+
+  body.show-zh .phrase-zh { display: block; }
+
+  @media (max-width: 860px) {
+    .quiz-options { grid-template-columns: 1fr; }
+    .ref-grid { grid-template-columns: 1fr; }
+  }
+
+  :focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-title">日本星巴克日語學習工具</span>
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-sub">速查 ・ 單字卡 ・ 測驗 ・ 易混淆點</span>
+    <button class="theme-toggle" id="themeToggle" title="切換晝夜模式" aria-label="切換晝夜模式">
+      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4.5"></circle>
+        <line x1="12" y1="2.5" x2="12" y2="5"></line>
+        <line x1="12" y1="19" x2="12" y2="21.5"></line>
+        <line x1="4.2" y1="4.2" x2="6" y2="6"></line>
+        <line x1="18" y1="18" x2="19.8" y2="19.8"></line>
+        <line x1="2.5" y1="12" x2="5" y2="12"></line>
+        <line x1="19" y1="12" x2="21.5" y2="12"></line>
+        <line x1="4.2" y1="19.8" x2="6" y2="18"></line>
+        <line x1="18" y1="6" x2="19.8" y2="4.2"></line>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<nav class="tabbar" id="modeTabbar">
+  <div class="tab-item active" data-mode="ref">速查表</div>
+  <div class="tab-item" data-mode="study">單字卡</div>
+  <div class="tab-item" data-mode="phrase">常用句</div>
+</nav>
+
+<nav class="subtabbar" id="catTabbar"></nav>
+
+<main class="main">
+
+  <!-- ============ REF (速査表) VIEW ============ -->
+  <section class="view active" id="view-ref">
+    <nav class="inner-tabbar" id="refInnerTabbar">
+      <div class="inner-tab-item active" data-submode="lookup">查詢</div>
+      <div class="inner-tab-item" data-submode="confuse">易混淆</div>
+    </nav>
+
+    <!-- 查詢子視圖 -->
+    <div class="inner-view active" id="ref-lookup">
+      <p class="section-label">點擊單字查看假名與中文意思</p>
+      <div class="shape-filter-row" id="shapeFilterRow" style="display:none;"></div>
+      <div class="ref-grid" id="refGrid"></div>
+    </div>
+
+    <!-- 易混淆子視圖 -->
+    <div class="inner-view" id="ref-confuse">
+      <p class="section-label">容易混淆的單字組</p>
+      <div id="confuseList"></div>
+    </div>
+  </section>
+
+  <!-- ============ STUDY (flashcard) VIEW ============ -->
+  <section class="view" id="view-study">
+    <div class="study-toolbar-row">
+      <nav class="inner-tabbar" id="studyInnerTabbar">
+        <div class="inner-tab-item active" data-submode="memorize">記憶</div>
+        <div class="inner-tab-item" data-submode="quiz">測驗</div>
+      </nav>
+      <button class="direction-toggle-btn" id="directionToggleBtn" type="button" style="display:none;">切換為「中→日」</button>
+    </div>
+
+    <!-- 記憶子視圖 -->
+    <div class="inner-view active" id="study-memorize">
+      <p class="section-label">點擊卡片查看中文意思</p>
+      <div class="study-layout">
+        <div class="card-panel" id="flashcard">
+          <span class="card-index-tag" id="cardIndexTag">1 / 10</span>
+          <div class="card-jp" id="cardJp"></div>
+          <div class="card-kana" id="cardKana"></div>
+          <div class="card-zh" id="cardZh"></div>
+          <div class="card-hint" id="cardHint">點擊卡片看中文</div>
+        </div>
+        <div class="card-nav-row">
+          <button class="nav-btn" id="prevBtn">‹</button>
+          <span class="nav-counter" id="navCounter">1 / 10</span>
+          <button class="nav-btn" id="nextBtn">›</button>
+          <button class="shuffle-btn" id="shuffleBtn">隨機排序</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 測驗子視圖 -->
+    <div class="inner-view" id="study-quiz">
+      <div class="quiz-wrap">
+        <div class="quiz-progress" id="quizProgress">第 1 題 / 共 10 題</div>
+        <div id="quizContent">
+          <div class="quiz-panel">
+            <div class="quiz-question-label" id="quizQuestionLabel">這個單字的中文意思是？</div>
+            <div class="quiz-jp" id="quizJp"></div>
+            <div class="quiz-kana" id="quizKana"></div>
+          </div>
+          <div class="quiz-options" id="quizOptions"></div>
+          <div class="quiz-feedback" id="quizFeedback"></div>
+          <div class="quiz-footer">
+            <span class="quiz-score">得分 <strong id="scoreText">0 / 0</strong></span>
+            <button class="next-btn" id="nextQuestionBtn" disabled>下一題</button>
+          </div>
+        </div>
+        <div id="quizResultView" style="display:none;">
+          <div class="quiz-panel quiz-result">
+            <div class="big-score" id="finalScore">0 / 10</div>
+            <div class="result-msg" id="resultMsg"></div>
+            <button class="restart-btn" id="restartBtn">再測一次</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PHRASE (常用句) VIEW ============ -->
+  <section class="view" id="view-phrase">
+    <div class="phrase-toolbar">
+      <p class="section-label">依場景查看日本星巴克常用敬語對話。滑鼠移到日文上可看假名，點喇叭可播放發音</p>
+      <div class="phrase-toggle-group">
+        <button class="phrase-toggle-btn" id="toggleZh" data-on="false">中文</button>
+      </div>
+    </div>
+    <nav class="scene-tabbar" id="sceneTabbar"></nav>
+    <nav class="scenario-tabbar" id="scenarioTabbar"></nav>
+    <div class="playall-row">
+      <button class="playall-btn" id="playAllBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="playAllIcon">
+          <polygon points="6 4 20 12 6 20 6 4"></polygon>
+        </svg>
+        <span id="playAllLabel">全部播放本情境</span>
+      </button>
+    </div>
+    <div class="phrase-list" id="phraseList"></div>
+  </section>
+
+</main>
+
+<script>
+const VOCAB_DATA = {
+  order: { label: "點餐・基本用語", items: [
+    { jp: "ご注文", kana: "ごちゅうもん", zh: "點餐／訂單" },
+    { jp: "お会計", kana: "おかいけい", zh: "結帳" },
+    { jp: "レジ", kana: "れじ", zh: "收銀台" },
+    { jp: "店内", kana: "てんない", zh: "內用" },
+    { jp: "持ち帰り", kana: "もちかえり", zh: "外帶" },
+    { jp: "モバイルオーダー", kana: "もばいるおーだー", zh: "行動點餐" },
+    { jp: "お渡し口", kana: "おわたしぐち", zh: "取餐口" },
+    { jp: "番号札", kana: "ばんごうふだ", zh: "取餐號碼牌" },
+    { jp: "注文番号", kana: "ちゅうもんばんごう", zh: "訂單編號" },
+    { jp: "お薦め", kana: "おすすめ", zh: "推薦" },
+  ]},
+  drink: { label: "飲品・杯型", items: [
+    { jp: "コーヒー", kana: "こーひー", zh: "咖啡" },
+    { jp: "カフェラテ", kana: "かふぇらて", zh: "咖啡拿鐵" },
+    { jp: "カプチーノ", kana: "かぷちーの", zh: "卡布奇諾" },
+    { jp: "キャラメルマキアート", kana: "きゃらめるまきあーと", zh: "焦糖瑪奇朵" },
+    { jp: "フラペチーノ", kana: "ふらぺちーの", zh: "星冰樂" },
+    { jp: "アメリカーノ", kana: "あめりかーの", zh: "美式咖啡" },
+    { jp: "エスプレッソ", kana: "えすぷれっそ", zh: "濃縮咖啡" },
+    { jp: "ティーラテ", kana: "てぃーらて", zh: "茶拿鐵" },
+    { jp: "ショート", kana: "しょーと", zh: "小杯（約240ml）", shape: "size" },
+    { jp: "トール", kana: "とーる", zh: "中杯（約350ml）", shape: "size" },
+    { jp: "グランデ", kana: "ぐらんで", zh: "大杯（約470ml）", shape: "size" },
+    { jp: "ベンティ", kana: "べんてぃ", zh: "特大杯（約590ml）", shape: "size" },
+    { jp: "ホット", kana: "ほっと", zh: "熱飲", shape: "temp" },
+    { jp: "アイス", kana: "あいす", zh: "冰飲", shape: "temp" },
+  ]},
+  customize: { label: "客製化", items: [
+    { jp: "シロップ", kana: "しろっぷ", zh: "風味糖漿" },
+    { jp: "ソース", kana: "そーす", zh: "風味醬" },
+    { jp: "ホイップクリーム", kana: "ほいっぷくりーむ", zh: "鮮奶油" },
+    { jp: "ミルク変更", kana: "みるくへんこう", zh: "更換奶類" },
+    { jp: "豆乳", kana: "とうにゅう", zh: "豆漿" },
+    { jp: "アーモンドミルク", kana: "あーもんどみるく", zh: "杏仁奶" },
+    { jp: "オーツミルク", kana: "おーつみるく", zh: "燕麥奶" },
+    { jp: "氷なし", kana: "こおりなし", zh: "去冰" },
+    { jp: "氷少なめ", kana: "こおりすくなめ", zh: "少冰" },
+    { jp: "甘さ控えめ", kana: "あまさひかえめ", zh: "微糖" },
+    { jp: "エキストラショット", kana: "えきすとらしょっと", zh: "加濃縮" },
+    { jp: "デカフェ", kana: "でかふぇ", zh: "低咖啡因" },
+  ]},
+  facility: { label: "店內服務・設備", items: [
+    { jp: "Wi-Fi", kana: "わいふぁい", zh: "Wi-Fi" },
+    { jp: "電源", kana: "でんげん", zh: "插座" },
+    { jp: "禁煙席", kana: "きんえんせき", zh: "禁菸座位" },
+    { jp: "カウンター席", kana: "かうんたーせき", zh: "吧台座位" },
+    { jp: "テラス席", kana: "てらすせき", zh: "露天座位" },
+    { jp: "紙ストロー", kana: "かみすとろー", zh: "紙吸管" },
+    { jp: "マイカップ", kana: "まいかっぷ", zh: "自備杯" },
+    { jp: "マイタンブラー", kana: "まいたんぶらー", zh: "自備隨行杯" },
+    { jp: "店舗限定グッズ", kana: "てんぽげんていぐっず", zh: "店鋪限定商品" },
+    { jp: "スターバックスカード", kana: "すたーばっくすかーど", zh: "星巴克儲值卡" },
+    { jp: "アプリ会員", kana: "あぷりかいいん", zh: "App會員" },
+    { jp: "領収書", kana: "りょうしゅうしょ", zh: "收據（報帳用）" },
+  ]},
+};
+
+const CONFUSE_GROUPS = [
+  {
+    title: "尺寸易混：ショート vs トール vs グランデ vs ベンティ",
+    items: [
+      { jp: "ショート", kana: "しょーと", zh: "最小杯，約240ml" },
+      { jp: "トール", kana: "とーる", zh: "中杯，約350ml（店內基本杯型）" },
+      { jp: "グランデ", kana: "ぐらんで", zh: "大杯，約470ml" },
+      { jp: "ベンティ", kana: "べんてぃ", zh: "特大杯，約590ml（熱飲無此尺寸）" },
+    ],
+  },
+  {
+    title: "點餐方式易混：店内 vs 持ち帰り vs モバイルオーダー",
+    items: [
+      { jp: "店内", kana: "てんない", zh: "在店內使用，內用杯具" },
+      { jp: "持ち帰り", kana: "もちかえり", zh: "外帶，使用外帶杯" },
+      { jp: "モバイルオーダー", kana: "もばいるおーだー", zh: "用App先下單，到店取餐" },
+    ],
+  },
+  {
+    title: "奶類選擇易混：豆乳 vs アーモンドミルク vs オーツミルク",
+    items: [
+      { jp: "豆乳", kana: "とうにゅう", zh: "豆漿，口感濃厚" },
+      { jp: "アーモンドミルク", kana: "あーもんどみるく", zh: "杏仁奶，口感清爽微甜" },
+      { jp: "オーツミルク", kana: "おーつみるく", zh: "燕麥奶，口感滑順" },
+    ],
+  },
+  {
+    title: "冰塊與甜度易混：氷なし vs 氷少なめ vs 甘さ控えめ",
+    items: [
+      { jp: "氷なし", kana: "こおりなし", zh: "完全不加冰" },
+      { jp: "氷少なめ", kana: "こおりすくなめ", zh: "冰塊減少" },
+      { jp: "甘さ控えめ", kana: "あまさひかえめ", zh: "甜度降低（糖漿減少）" },
+    ],
+  },
+  {
+    title: "飲品系列易混：カフェラテ vs カプチーノ vs キャラメルマキアート",
+    items: [
+      { jp: "カフェラテ", kana: "かふぇらて", zh: "濃縮咖啡＋大量牛奶，奶泡薄" },
+      { jp: "カプチーノ", kana: "かぷちーの", zh: "濃縮咖啡＋等量奶泡與牛奶，奶泡厚" },
+      { jp: "キャラメルマキアート", kana: "きゃらめるまきあーと", zh: "牛奶為底，最後加濃縮與焦糖，層次分明" },
+    ],
+  },
+  {
+    title: "會員與帳務易混：スターバックスカード vs アプリ会員 vs 領収書",
+    items: [
+      { jp: "スターバックスカード", kana: "すたーばっくすかーど", zh: "可儲值的實體／電子卡片" },
+      { jp: "アプリ会員", kana: "あぷりかいいん", zh: "App會員身份，用於累積星星／點數" },
+      { jp: "領収書", kana: "りょうしゅうしょ", zh: "報帳用的正式收據（需另外索取）" },
+    ],
+  },
+];
+
+// 漢字詞 → 假名讀音字典（用於常用句頁面 hover 顯示假名）
+// 依詞長由長到短排序比對，避免誤切
+const KANJI_READINGS = [
+  ["いただいておりますでしょうか", "いただいておりますでしょうか"],
+  ["いただけますでしょうか", "いただけますでしょうか"],
+  ["承知いたしました", "しょうちいたしました"],
+  ["申し訳ございませんでした", "もうしわけございませんでした"],
+  ["大変申し訳ございません", "たいへんもうしわけございません"],
+  ["申し訳ございませんが", "もうしわけございませんが"],
+  ["申し訳ございません", "もうしわけございません"],
+  ["少々お待ちくださいませ", "しょうしょうおまちくださいませ"],
+  ["お待たせいたしました", "おまたせいたしました"],
+  ["お待ちいただく可能性がございますが", "おまちいただくかのうせいがございますが"],
+  ["お持ち帰り", "おもちかえり"],
+  ["お持ちください", "おもちください"],
+  ["お召し上がり", "おめしあがり"],
+  ["お決まり", "おきまり"],
+  ["お願いします", "おねがいします"],
+  ["お願いできますか", "おねがいできますか"],
+  ["お願いいたします", "おねがいいたします"],
+  ["よろしくお願いします", "よろしくおねがいします"],
+  ["ご注文はございますか", "ごちゅうもんはございますか"],
+  ["ご注文を確認いたします", "ごちゅうもんをかくにんいたします"],
+  ["ご注文をご確認いたします", "ごちゅうもんをごかくにんいたします"],
+  ["どのようなご注文でしたでしょうか", "どのようなごちゅうもんでしたでしょうか"],
+  ["注文を間違えてしまいました", "ちゅうもんをまちがえてしまいました"],
+  ["注文したものと違うようです", "ちゅうもんしたものとちがうようです"],
+  ["注文番号", "ちゅうもんばんごう"],
+  ["ご注文", "ごちゅうもん"],
+  ["注文", "ちゅうもん"],
+  ["店内でお召し上がりですか", "てんないでおめしあがりですか"],
+  ["店内", "てんない"],
+  ["店外", "てんがい"],
+  ["店頭", "てんとう"],
+  ["店舗限定グッズ", "てんぽげんていぐっず"],
+  ["お会計", "おかいけい"],
+  ["六百八十円", "ろっぴゃくはちじゅうえん"],
+  ["六百三十五円", "ろっぴゃくさんじゅうごえん"],
+  ["五十五円", "ごじゅうごえん"],
+  ["七百二十円", "ななひゃくにじゅうえん"],
+  ["三千五百円", "さんせんごひゃくえん"],
+  ["三千円", "さんせんえん"],
+  ["番号札", "ばんごうふだ"],
+  ["お渡し口", "おわたしぐち"],
+  ["お薦め", "おすすめ"],
+  ["今のお薦めは何ですか", "いまのおすすめはなんですか"],
+  ["変更できますか", "へんこうできますか"],
+  ["変更も可能でございます", "へんこうもかのうでございます"],
+  ["すぐに変更いたします", "すぐにへんこういたします"],
+  ["ミルク変更", "みるくへんこう"],
+  ["変更", "へんこう"],
+  ["追加料金", "ついかりょうきん"],
+  ["追加することもできます", "ついかすることもできます"],
+  ["追加", "ついか"],
+  ["甘さ控えめ", "あまさひかえめ"],
+  ["控えめ", "ひかえめ"],
+  ["甘さ", "あまさ"],
+  ["氷少なめ", "こおりすくなめ"],
+  ["氷なし", "こおりなし"],
+  ["氷の量はいかがいたしましょうか", "こおりのりょうはいかがいたしましょうか"],
+  ["氷", "こおり"],
+  ["少なめ", "すくなめ"],
+  ["普通の量で大丈夫です", "ふつうのりょうでだいじょうぶです"],
+  ["普通", "ふつう"],
+  ["量", "りょう"],
+  ["大丈夫です", "だいじょうぶです"],
+  ["変えなくて大丈夫です", "かえなくてだいじょうぶです"],
+  ["結構です", "けっこうです"],
+  ["確認いたします", "かくにんいたします"],
+  ["確認させていただきます", "かくにんさせていただきます"],
+  ["確認いたしました", "かくにんいたしました"],
+  ["確認できました", "かくにんできました"],
+  ["確認しました", "かくにんしました"],
+  ["豆乳に変更", "とうにゅうにへんこう"],
+  ["豆乳", "とうにゅう"],
+  ["受け取りたいのですが", "うけとりたいのですが"],
+  ["受け取れますか", "うけとれますか"],
+  ["お受け取りくださいませ", "おうけとりくださいませ"],
+  ["お客様", "おきゃくさま"],
+  ["紙ストロー", "かみすとろー"],
+  ["お付けしております", "おつけしております"],
+  ["必要でしたら", "ひつようでしたら"],
+  ["十分です", "じゅうぶんです"],
+  ["良い一日をお過ごしくださいませ", "よいいちにちをおすごしくださいませ"],
+  ["季節限定のドリンク", "きせつげんていのどりんく"],
+  ["季節限定", "きせつげんてい"],
+  ["秋限定", "あきげんてい"],
+  ["人気がございます", "にんきがございます"],
+  ["人気", "にんき"],
+  ["味", "あじ"],
+  ["香り", "かおり"],
+  ["一品でございます", "いっぴんでございます"],
+  ["両方ご用意しております", "りょうほうごよういしております"],
+  ["両方", "りょうほう"],
+  ["本日は少し涼しいので", "ほんじつはすこしすずしいので"],
+  ["本日分", "ほんじつぶん"],
+  ["本日", "ほんじつ"],
+  ["涼しい", "すずしい"],
+  ["フードもご一緒にいかがでしょうか", "ふーどもごいっしょにいかがでしょうか"],
+  ["気になりますね", "きになりますね"],
+  ["お支払い方法はいかがいたしましょうか", "おしはらいほうほうはいかがいたしましょうか"],
+  ["お支払いが完了いたしました", "おしはらいがかんりょういたしました"],
+  ["お支払い方法", "おしはらいほうほう"],
+  ["端末にカードをかざしてください", "たんまつにかーどをかざしてください"],
+  ["端末", "たんまつ"],
+  ["完了いたしました", "かんりょういたしました"],
+  ["完了", "かんりょう"],
+  ["各種電子マネーやQRコード決済", "かくしゅでんしまねーやきゅーあーるこーどけっさい"],
+  ["電子マネー", "でんしまねー"],
+  ["決済", "けっさい"],
+  ["各種", "かくしゅ"],
+  ["次回はそれで支払ってみます", "じかいはそれでしはらってみます"],
+  ["次回アプリで試してみます", "じかいあぷりでためしてみます"],
+  ["次回", "じかい"],
+  ["お試しくださいませ", "おためしくださいませ"],
+  ["チャージしたいのですが", "ちゃーじしたいのですが"],
+  ["いくらチャージいたしましょうか", "いくらちゃーじいたしましょうか"],
+  ["チャージが完了いたしました", "ちゃーじがかんりょういたしました"],
+  ["現金でお願いします", "げんきんでおねがいします"],
+  ["現金", "げんきん"],
+  ["残高は三千五百円でございます", "ざんだかはさんせんごひゃくえんでございます"],
+  ["残高がなくなりましたら", "ざんだかがなくなりましたら"],
+  ["残高", "ざんだか"],
+  ["カードをお出しくださいませ", "かーどをおだしくださいませ"],
+  ["お声がけくださいませ", "おこえがけくださいませ"],
+  ["アプリ会員になりたいのですが", "あぷりかいいんになりたいのですが"],
+  ["アプリ会員", "あぷりかいいん"],
+  ["会員", "かいいん"],
+  ["登録は今からでもできますか", "とうろくはいまからでもできますか"],
+  ["ご登録、お待ちしております", "ごとうろく、おまちしております"],
+  ["登録", "とうろく"],
+  ["簡単にご登録いただけます", "かんたんにごとうろくいただけます"],
+  ["簡単に", "かんたんに"],
+  ["貯まりやすくなります", "たまりやすくなります"],
+  ["一定数貯まりますと", "いっていすうたまりますと"],
+  ["無料のドリンクなどに交換できます", "むりょうのどりんくなどにこうかんできます"],
+  ["無料になるキャンペーン", "むりょうになるきゃんぺーん"],
+  ["無料", "むりょう"],
+  ["交換できます", "こうかんできます"],
+  ["反映できますか", "はんえいできますか"],
+  ["反映することはできません", "はんえいすることはできません"],
+  ["反映", "はんえい"],
+  ["店頭でのご注文後に", "てんとうでのごちゅうもんごに"],
+  ["店頭では適用できません", "てんとうではてきようできません"],
+  ["領収書をいただけますか", "りょうしゅうしょをいただけますか"],
+  ["領収書", "りょうしゅうしょ"],
+  ["レシートとは別に", "れしーととはべつに"],
+  ["レシートはいただけますか", "れしーとはいただけますか"],
+  ["宛名はどのようにいたしましょうか", "あてなはどのようにいたしましょうか"],
+  ["宛名", "あてな"],
+  ["上様でお願いします", "うえさまでおねがいします"],
+  ["上様", "うえさま"],
+  ["日付も入っていますか", "ひづけもはいっていますか"],
+  ["本日の日付が記載されております", "ほんじつのひづけがきさいされております"],
+  ["日付", "ひづけ"],
+  ["記載されております", "きさいされております"],
+  ["会社名を入れることもできますか", "かいしゃめいをいれることもできますか"],
+  ["会社名をお伝えいただけますでしょうか", "かいしゃめいをおつたえいただけますでしょうか"],
+  ["会社名", "かいしゃめい"],
+  ["株式会社山田商事でお願いします", "かぶしきがいしゃやまだしょうじでおねがいします"],
+  ["修正いたしましたので", "しゅうせいいたしましたので"],
+  ["問題ありません", "もんだいありません"],
+  ["問題ございません", "もんだいございません"],
+  ["店内に席はありますか", "てんないにせきはありますか"],
+  ["ただいま満席となっております", "ただいままんせきとなっております"],
+  ["満席", "まんせき"],
+  ["どのくらいで席が空きますか", "どのくらいでせきがあきますか"],
+  ["十五分ほどお待ちいただければ", "じゅうごふんほどおまちいただければ"],
+  ["十五分", "じゅうごふん"],
+  ["お席をご案内できるかと存じます", "おせきをごあんないできるかとぞんじます"],
+  ["お席が空きましたら", "おせきがあきましたら"],
+  ["お席", "おせき"],
+  ["カウンター席は奥にございます", "かうんたーせきはおくにございます"],
+  ["カウンター席", "かうんたーせき"],
+  ["奥にございます", "おくにございます"],
+  ["奥", "おく"],
+  ["間もなく空く見込みでございます", "まもなくあくみこみでございます"],
+  ["間もなく", "まもなく"],
+  ["見込みでございます", "みこみでございます"],
+  ["入荷する見込みでございます", "にゅうかするみこみでございます"],
+  ["見込み", "みこみ"],
+  ["店外にテラス席もございます", "てんがいにてらすせきもございます"],
+  ["テラス席", "てらすせき"],
+  ["本日は天気が良いので", "ほんじつはてんきがいいので"],
+  ["天気", "てんき"],
+  ["今回はカウンター席で大丈夫です", "こんかいはかうんたーせきでだいじょうぶです"],
+  ["今回", "こんかい"],
+  ["お呼びいたします", "およびいたします"],
+  ["店内のWi-Fiは使えますか", "てんないのわいふぁいはつかえますか"],
+  ["接続方法はこちらに記載されております", "せつぞくほうほうはこちらにきさいされております"],
+  ["接続方法", "せつぞくほうほう"],
+  ["パスワードは不要でございます", "ぱすわーどはふようでございます"],
+  ["不要でございます", "ふようでございます"],
+  ["不要な場合は", "ふようなばあいは"],
+  ["不要", "ふよう"],
+  ["利用規約に同意していただければ", "りようきやくにどういしていただければ"],
+  ["利用規約", "りようきやく"],
+  ["同意していただければ", "どういしていただければ"],
+  ["同意", "どうい"],
+  ["電源を使える席はありますか", "でんげんをつかえるせきはありますか"],
+  ["窓際の席に電源がございます", "まどぎわのせきにでんげんがございます"],
+  ["電源", "でんげん"],
+  ["窓際", "まどぎわ"],
+  ["ご案内いたします", "ごあんないいたします"],
+  ["マイカップを持ってきたのですが", "まいかっぷをもってきたのですが"],
+  ["マイカップ", "まいかっぷ"],
+  ["少しお安くなります", "すこしおやすくなります"],
+  ["少しお待ちいただく", "すこしおまちいただく"],
+  ["少し", "すこし"],
+  ["マイタンブラーも同じですか", "まいたんぶらーもおなじですか"],
+  ["マイタンブラー", "まいたんぶらー"],
+  ["同様にご利用いただけます", "どうように ごりよういただけます"],
+  ["同様に", "どうように"],
+  ["環境にご協力いただき", "かんきょうにごきょうりょくいただき"],
+  ["環境", "かんきょう"],
+  ["協力いただき", "きょうりょくいただき"],
+  ["紙袋でよろしいでしょうか", "かみぶくろでよろしいでしょうか"],
+  ["紙袋", "かみぶくろ"],
+  ["別々の袋に入れさせていただきます", "べつべつのふくろにいれさせていただきます"],
+  ["別々", "べつべつ"],
+  ["何名様分、お入れいたしましょうか", "なんめいさまぶん、おいれいたしましょうか"],
+  ["何名様分", "なんめいさまぶん"],
+  ["二名分お願いします", "にめいぶんおねがいします"],
+  ["二名分", "にめいぶん"],
+  ["すべてお入れいたしました", "すべておいれいたしました"],
+  ["お気をつけてお持ちくださいませ", "おきをつけておもちくださいませ"],
+  ["お気をつけて", "おきをつけて"],
+  ["まだお作りしておりませんので", "まだおつくりしておりませんので"],
+  ["対応させていただきます", "たいおうさせていただきます"],
+  ["サイズはトールのままでよろしいでしょうか", "さいずはとーるのままでよろしいでしょうか"],
+  ["これで合っています", "これであっています"],
+  ["こちらで合っています", "こちらであっています"],
+  ["合っています", "あっています"],
+  ["売り切れとなっております", "うりきれとなっております"],
+  ["売り切れ", "うりきれ"],
+  ["残念です", "ざんねんです"],
+  ["明日の朝には入荷する見込みでございます", "あしたのあさにはにゅうかするみこみでございます"],
+  ["明日の朝", "あしたのあさ"],
+  ["明日また来てみます", "あしたまたきてみます"],
+  ["出来上がりましたら", "できあがりましたら"],
+  ["お呼びいたします", "およびいたします"],
+  ["大変申し訳ございませんでした", "たいへんもうしわけございませんでした"],
+  ["確認いたしました", "かくにんいたしました"],
+  ["すぐに作り直しいたします", "すぐにつくりなおしいたします"],
+  ["作り直しいたします", "つくりなおしいたします"],
+  ["改めてお詫び申し上げます", "あらためてお詫びもうしあげます"],
+  ["お詫び申し上げます", "おわびもうしあげます"],
+  ["ご不便をおかけし", "ごふべんをおかけし"],
+  ["お詫びにクーポンをお渡しさせていただきます", "おわびにくーぽんをおわたしさせていただきます"],
+  ["お詫びに", "おわびに"],
+  ["私どもの不手際でございますので", "わたくしどものふてぎわでございますので"],
+  ["不手際でございますので", "ふてぎわでございますので"],
+  ["このクーポンは使えますか", "このくーぽんはつかえますか"],
+  ["使えますか", "つかえますか"],
+  ["期限が切れております", "きげんがきれております"],
+  ["期限", "きげん"],
+  ["知りませんでした", "しりませんでした"],
+  ["他に使えるキャンペーンはありますか", "ほかにつかえるきゃんぺーんはありますか"],
+  ["現在アプリ限定のキャンペーンを実施しております", "げんざいあぷりげんていのきゃんぺーんをじっししております"],
+  ["実施しております", "じっししております"],
+  ["どのような内容ですか", "どのようなないようですか"],
+  ["内容", "ないよう"],
+  ["ドリンクを二つご注文いただくと", "どりんくをふたつごちゅうもんいただくと"],
+  ["一つ無料になる", "ひとつむりょうになる"],
+  ["アプリでのご注文に限られておりますので", "あぷりでのごちゅうもんにかぎられておりますので"],
+  ["限られておりますので", "かぎられておりますので"],
+  ["店頭では適用できません", "てんとうではてきようできません"],
+  ["適用できません", "てきようできません"],
+  ["他に", "ほかに"],
+  ["他に何かございましたら", "ほかになにかございましたら"],
+  ["他のおすすめはありますか", "ほかのおすすめはありますか"],
+  ["他のお薦め", "ほかのおすすめ"],
+  ["温かいものでよろしいでしょうか", "あたたかいものでよろしいでしょうか"],
+  ["温かいもの", "あたたかいもの"],
+  ["わかりました", "わかりました"],
+  ["承知いたしました", "しょうちいたしました"],
+];
+
+KANJI_READINGS.sort((a, b) => b[0].length - a[0].length);
+
+function buildFuriganaHTML(text) {
+  let result = '';
+  let i = 0;
+  while (i < text.length) {
+    let matched = false;
+    for (const [word, kana] of KANJI_READINGS) {
+      if (text.startsWith(word, i) && /[\u4E00-\u9FFF]/.test(word)) {
+        result += `<span class="furi" data-kana="${kana}">${word}</span>`;
+        i += word.length;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      result += text[i];
+      i += 1;
+    }
+  }
+  return result;
+}
+
+// 常用句：依場景分類，每個場景再分情境，每句標明說話者（staff=店員 / customer=客人）
+const PHRASE_DATA = {
+  order: {
+    label: "點餐",
+    scenarios: [
+      {
+        label: "情境一：基本點餐",
+        items: [
+          { speaker: "staff", jp: "いらっしゃいませ、スターバックスでございます。ご注文はお決まりでしょうか。", kana: "いらっしゃいませ、すたーばっくすでございます。ごちゅうもんはおきまりでしょうか。", zh: "歡迎光臨,這裡是星巴克,請問決定好餐點了嗎？" },
+          { speaker: "customer", jp: "はい、カフェラテのトールを一つお願いします。", kana: "はい、かふぇらてのとーるをひとつおねがいします。", zh: "是的,請給我一杯中杯的咖啡拿鐵。" },
+          { speaker: "staff", jp: "カフェラテのトール、お一つでございますね。店内でお召し上がりですか、お持ち帰りですか。", kana: "かふぇらてのとーる、おひとつでございますね。てんないでおめしあがりですか、おもちかえりですか。", zh: "中杯咖啡拿鐵一杯,請問是要內用還是外帶呢？" },
+          { speaker: "customer", jp: "店内でお願いします。", kana: "てんないでおねがいします。", zh: "內用,謝謝。" },
+          { speaker: "staff", jp: "かしこまりました。温かいものでよろしいでしょうか。", kana: "かしこまりました。あたたかいものでよろしいでしょうか。", zh: "好的,溫熱的可以嗎？" },
+          { speaker: "customer", jp: "はい、ホットでお願いします。", kana: "はい、ほっとでおねがいします。", zh: "是的,請給我熱的。" },
+          { speaker: "staff", jp: "ありがとうございます。他にご注文はございますか。", kana: "ありがとうございます。ほかにごちゅうもんはございますか。", zh: "謝謝您,還有其他要點的嗎？" },
+          { speaker: "customer", jp: "それと、チョコレートチップクッキーも一つください。", kana: "それと、ちょこれーとちっぷくっきーもひとつください。", zh: "另外,也請給我一個巧克力豆餅乾。" },
+          { speaker: "staff", jp: "承知いたしました。ご注文を確認いたします。カフェラテのトール、ホットお一つと、チョコレートチップクッキーお一つでございますね。", kana: "しょうちいたしました。ごちゅうもんをかくにんいたします。かふぇらてのとーる、ほっとおひとつと、ちょこれーとちっぷくっきーおひとつでございますね。", zh: "了解了,我為您確認一下訂單,熱的中杯咖啡拿鐵一杯,和巧克力豆餅乾一個,對嗎？" },
+          { speaker: "customer", jp: "はい、それで大丈夫です。", kana: "はい、それでだいじょうぶです。", zh: "是的,這樣就可以了。" },
+          { speaker: "staff", jp: "ありがとうございます。お会計は六百八十円でございます。", kana: "ありがとうございます。おかいけいはろっぴゃくはちじゅうえんでございます。", zh: "謝謝您,總共是六百八十日圓。" },
+          { speaker: "customer", jp: "カードでお願いします。", kana: "かーどでおねがいします。", zh: "請用信用卡付款。" },
+          { speaker: "staff", jp: "かしこまりました。お会計が済みましたら、こちらの番号札をお持ちください。", kana: "かしこまりました。おかいけいがすみましたら、こちらのばんごうふだをおもちください。", zh: "好的,結帳完成後,請拿著這個號碼牌。" },
+          { speaker: "customer", jp: "わかりました、ありがとうございます。", kana: "わかりました、ありがとうございます。", zh: "好的,謝謝你。" },
+        ],
+      },
+      {
+        label: "情境二：客製化要求",
+        items: [
+          { speaker: "customer", jp: "すみません、カフェラテを豆乳に変更できますか？", kana: "すみません、かふぇらてをとうにゅうにへんこうできますか？", zh: "不好意思,可以把咖啡拿鐵的牛奶換成豆漿嗎？" },
+          { speaker: "staff", jp: "はい、豆乳への変更も可能でございます。追加料金は五十五円となります。", kana: "はい、とうにゅうへのへんこうもかのうでございます。ついかりょうきんはごじゅうごえんとなります。", zh: "可以的,可以換成豆漿,追加費用是五十五日圓。" },
+          { speaker: "customer", jp: "わかりました、それでお願いします。それと、甘さを控えめにしてもらえますか？", kana: "わかりました、それでおねがいします。それと、あまさをひかえめにしてもらえますか？", zh: "了解了,那就麻煩了。另外,可以幫我把甜度調低一點嗎？" },
+          { speaker: "staff", jp: "かしこまりました。シロップの量を少なめにいたします。", kana: "かしこまりました。しろっぷのりょうをすくなめにいたします。", zh: "好的,我會把糖漿的量減少。" },
+          { speaker: "customer", jp: "ホイップクリームは普通の量で大丈夫です。", kana: "ほいっぷくりーむはふつうのりょうでだいじょうぶです。", zh: "鮮奶油的份量正常就好。" },
+          { speaker: "staff", jp: "承知いたしました。氷の量はいかがいたしましょうか。", kana: "しょうちいたしました。こおりのりょうはいかがいたしましょうか。", zh: "了解了,請問冰塊的量要怎麼調整呢？" },
+          { speaker: "customer", jp: "アイスでお願いしますが、氷は少なめにしてください。", kana: "あいすでおねがいしますが、こおりはすくなめにしてください。", zh: "請給我冰的,但冰塊請少一點。" },
+          { speaker: "staff", jp: "かしこまりました。エスプレッソを一つ追加することもできますが、いかがでしょうか。", kana: "かしこまりました。えすぷれっそをひとつついかすることもできますが、いかがでしょうか。", zh: "好的,也可以幫您加一份濃縮咖啡,需要嗎？" },
+          { speaker: "customer", jp: "それは結構です、今のままで大丈夫です。", kana: "それはけっこうです、いまのままでだいじょうぶです。", zh: "那不需要,現在這樣就可以了。" },
+          { speaker: "staff", jp: "承知いたしました。ご注文を確認いたします。豆乳のカフェラテ、アイス、甘さ控えめ、氷少なめでございますね。", kana: "しょうちいたしました。ごちゅうもんをかくにんいたします。とうにゅうのかふぇらて、あいす、あまさひかえめ、こおりすくなめでございますね。", zh: "了解了,確認一下您的訂單,豆漿咖啡拿鐵、冰的、微糖、少冰,對嗎？" },
+          { speaker: "customer", jp: "はい、それでお願いします。", kana: "はい、それでおねがいします。", zh: "是的,就這樣麻煩你了。" },
+          { speaker: "staff", jp: "ありがとうございます。お会計は六百三十五円でございます。", kana: "ありがとうございます。おかいけいはろっぴゃくさんじゅうごえんでございます。", zh: "謝謝您,總共是六百三十五日圓。" },
+        ],
+      },
+      {
+        label: "情境三：行動點餐取餐",
+        items: [
+          { speaker: "customer", jp: "すみません、モバイルオーダーで注文した商品を受け取りたいのですが。", kana: "すみません、もばいるおーだーでちゅうもんしたしょうひんをうけとりたいのですが。", zh: "不好意思,我想取我用行動點餐訂的東西。" },
+          { speaker: "staff", jp: "かしこまりました。注文番号を教えていただけますでしょうか。", kana: "かしこまりました。ちゅうもんばんごうをおしえていただけますでしょうか。", zh: "好的,可以告訴我訂單編號嗎？" },
+          { speaker: "customer", jp: "はい、注文番号は1234です。", kana: "はい、ちゅうもんばんごうはせんにひゃくさんじゅうよんです。", zh: "好的,訂單編號是1234。" },
+          { speaker: "staff", jp: "確認いたします。少々お待ちくださいませ。", kana: "かくにんいたします。しょうしょうおまちくださいませ。", zh: "我來確認一下,請稍候。" },
+          { speaker: "staff", jp: "お待たせいたしました。ご注文のアイスキャラメルマキアート、確認できました。", kana: "おまたせいたしました。ごちゅうもんのあいすきゃらめるまきあーと、かくにんできました。", zh: "讓您等候了,您訂的冰焦糖瑪奇朵已經確認了。" },
+          { speaker: "customer", jp: "ありがとうございます、どちらで受け取れますか？", kana: "ありがとうございます、どちらでうけとれますか？", zh: "謝謝你,要在哪裡領取呢？" },
+          { speaker: "staff", jp: "お渡し口でお呼びいたします。少々お待ちくださいませ。", kana: "おわたしぐちでおよびいたします。しょうしょうおまちくださいませ。", zh: "我們會在取餐口叫您,請稍候一下。" },
+          { speaker: "staff", jp: "お待たせいたしました、お客様。アイスキャラメルマキアートでございます。", kana: "おまたせいたしました、おきゃくさま。あいすきゃらめるまきあーとでございます。", zh: "讓您等候了,這位客人,這是您的冰焦糖瑪奇朵。" },
+          { speaker: "customer", jp: "ありがとうございます。ストローはついていますか？", kana: "ありがとうございます。すとろーはついていますか？", zh: "謝謝你,有附吸管嗎？" },
+          { speaker: "staff", jp: "はい、紙ストローをお付けしております。必要でしたら、こちらにもご用意しております。", kana: "はい、かみすとろーをおつけしております。ひつようでしたら、こちらにもごよういしております。", zh: "有的,已經附上紙吸管了,如果需要的話,這裡也有準備。" },
+          { speaker: "customer", jp: "十分です、ありがとうございます。", kana: "じゅうぶんです、ありがとうございます。", zh: "這樣就夠了,謝謝你。" },
+          { speaker: "staff", jp: "ありがとうございます。良い一日をお過ごしくださいませ。", kana: "ありがとうございます。よいいちにちをおすごしくださいませ。", zh: "謝謝您,祝您有美好的一天。" },
+        ],
+      },
+      {
+        label: "情境四：推薦詢問與季節限定",
+        items: [
+          { speaker: "customer", jp: "すみません、今のお薦めは何ですか？", kana: "すみません、いまのおすすめはなんですか？", zh: "不好意思,現在有什麼推薦的嗎？" },
+          { speaker: "staff", jp: "季節限定のドリンクがございます。今は秋限定のキャラメルアップルドリンクが人気でございます。", kana: "きせつげんていのどりんくがございます。いまはあきげんていのきゃらめるあっぷるどりんくがにんきでございます。", zh: "我們有季節限定的飲品,現在秋季限定的焦糖蘋果飲料很受歡迎。" },
+          { speaker: "customer", jp: "それはどんな味ですか？", kana: "それはどんなあじですか？", zh: "那是什麼樣的味道呢？" },
+          { speaker: "staff", jp: "りんごとキャラメルの甘さに、シナモンの香りが加わった一品でございます。", kana: "りんごときゃらめるのあまさに、しなもんのかおりがくわわったいっぴんでございます。", zh: "是蘋果與焦糖的甜味,再加上肉桂香氣的飲品。" },
+          { speaker: "customer", jp: "美味しそうですね。ホットとアイス、どちらがありますか？", kana: "おいしそうですね。ほっととあいす、どちらがありますか？", zh: "聽起來很好吃呢,有熱的還是冰的呢？" },
+          { speaker: "staff", jp: "両方ご用意しております。本日は少し涼しいので、ホットがお薦めでございます。", kana: "りょうほうごよういしております。ほんじつはすこしすずしいので、ほっとがおすすめでございます。", zh: "兩種都有提供,今天天氣稍涼,推薦熱的。" },
+          { speaker: "customer", jp: "それでは、ホットのトールサイズでお願いします。", kana: "それでは、ほっとのとーるさいずでおねがいします。", zh: "那麼,請給我熱的中杯。" },
+          { speaker: "staff", jp: "かしこまりました。フードもご一緒にいかがでしょうか。季節限定のパンプキンスコーンもございます。", kana: "かしこまりました。ふーどもごいっしょにいかがでしょうか。きせつげんていのぱんぷきんすこーんもございます。", zh: "好的,也要不要一起搭配點心呢？我們也有季節限定的南瓜司康。" },
+          { speaker: "customer", jp: "それも気になりますね、一つお願いします。", kana: "それもきになりますね、ひとつおねがいします。", zh: "那個也讓我有點好奇,請給我一個。" },
+          { speaker: "staff", jp: "ありがとうございます。ご注文を確認いたします。キャラメルアップルドリンクのホット、トールと、パンプキンスコーンお一つでございますね。", kana: "ありがとうございます。ごちゅうもんをかくにんいたします。きゃらめるあっぷるどりんくのほっと、とーると、ぱんぷきんすこーんおひとつでございますね。", zh: "謝謝您,確認一下您的訂單,熱的中杯焦糖蘋果飲料,和南瓜司康一個,對嗎？" },
+          { speaker: "customer", jp: "はい、それで大丈夫です。", kana: "はい、それでだいじょうぶです。", zh: "是的,這樣就可以了。" },
+          { speaker: "staff", jp: "ありがとうございます。お会計は七百二十円でございます。", kana: "ありがとうございます。おかいけいはななひゃくにじゅうえんでございます。", zh: "謝謝您,總共是七百二十日圓。" },
+        ],
+      },
+    ],
+  },
+  payment: {
+    label: "結帳",
+    scenarios: [
+      {
+        label: "情境一：一般結帳",
+        items: [
+          { speaker: "staff", jp: "お会計は六百八十円でございます。お支払い方法はいかがいたしましょうか。", kana: "おかいけいはろっぴゃくはちじゅうえんでございます。おしはらいほうほうはいかがいたしましょうか。", zh: "結帳金額是六百八十日圓,請問要怎麼付款呢？" },
+          { speaker: "customer", jp: "クレジットカードでお願いします。", kana: "くれじっとかーどでおねがいします。", zh: "請用信用卡付款。" },
+          { speaker: "staff", jp: "かしこまりました。こちらの端末にカードをかざしてください。", kana: "かしこまりました。こちらのたんまつにかーどをかざしてください。", zh: "好的,請將卡片靠近這台機器感應。" },
+          { speaker: "customer", jp: "かざしました。", kana: "かざしました。", zh: "我感應好了。" },
+          { speaker: "staff", jp: "ありがとうございます。お支払いが完了いたしました。", kana: "ありがとうございます。おしはらいがかんりょういたしました。", zh: "謝謝您,付款已經完成了。" },
+          { speaker: "customer", jp: "レシートはいただけますか？", kana: "れしーとはいただけますか？", zh: "可以給我收據嗎？" },
+          { speaker: "staff", jp: "はい、こちらがレシートでございます。", kana: "はい、こちらがれしーとでございます。", zh: "可以的,這是您的收據。" },
+          { speaker: "customer", jp: "ありがとうございます。電子マネーも使えますか？", kana: "ありがとうございます。でんしまねーもつかえますか？", zh: "謝謝你,也可以使用電子支付嗎？" },
+          { speaker: "staff", jp: "はい、各種電子マネーやQRコード決済もご利用いただけます。", kana: "はい、かくしゅでんしまねーやきゅーあーるこーどけっさいもごりよういただけます。", zh: "可以的,各種電子支付和QR Code支付都可以使用。" },
+          { speaker: "customer", jp: "次回はそれで支払ってみます。", kana: "じかいはそれでしはらってみます。", zh: "下次我試試用那種方式付款。" },
+          { speaker: "staff", jp: "ぜひお試しくださいませ。ありがとうございます。", kana: "ぜひおためしくださいませ。ありがとうございます。", zh: "歡迎您嘗試看看,謝謝您。" },
+        ],
+      },
+      {
+        label: "情境二：星巴克卡與儲值",
+        items: [
+          { speaker: "customer", jp: "スターバックスカードにチャージしたいのですが。", kana: "すたーばっくすかーどにちゃーじしたいのですが。", zh: "我想幫星巴克卡儲值。" },
+          { speaker: "staff", jp: "かしこまりました。いくらチャージいたしましょうか。", kana: "かしこまりました。いくらちゃーじいたしましょうか。", zh: "好的,請問要儲值多少呢？" },
+          { speaker: "customer", jp: "三千円お願いします。", kana: "さんせんえんおねがいします。", zh: "請幫我儲三千日圓。" },
+          { speaker: "staff", jp: "承知いたしました。お支払い方法はいかがいたしましょうか。", kana: "しょうちいたしました。おしはらいほうほうはいかがいたしましょうか。", zh: "了解了,請問要怎麼付款呢？" },
+          { speaker: "customer", jp: "現金でお願いします。", kana: "げんきんでおねがいします。", zh: "請用現金付款。" },
+          { speaker: "staff", jp: "ありがとうございます。チャージが完了いたしました。残高は三千五百円でございます。", kana: "ありがとうございます。ちゃーじがかんりょういたしました。ざんだかはさんせんごひゃくえんでございます。", zh: "謝謝您,儲值已經完成了,目前餘額是三千五百日圓。" },
+          { speaker: "customer", jp: "ありがとうございます。このカードでドリンクも買えますか？", kana: "ありがとうございます。このかーどでどりんくもかえますか？", zh: "謝謝你,這張卡也可以買飲料嗎？" },
+          { speaker: "staff", jp: "はい、もちろんでございます。お会計の際にカードをお出しくださいませ。", kana: "はい、もちろんでございます。おかいけいのさいにかーどをおだしくださいませ。", zh: "可以的,當然沒問題,結帳的時候請拿出這張卡。" },
+          { speaker: "customer", jp: "わかりました、ありがとうございます。", kana: "わかりました、ありがとうございます。", zh: "好的,謝謝你。" },
+          { speaker: "staff", jp: "残高がなくなりましたら、いつでもチャージできますので、お声がけくださいませ。", kana: "ざんだかがなくなりましたら、いつでもちゃーじできますので、おこえがけくださいませ。", zh: "如果餘額用完了,隨時都可以再儲值,請隨時告訴我們。" },
+        ],
+      },
+      {
+        label: "情境三：App會員與集點",
+        items: [
+          { speaker: "customer", jp: "すみません、アプリ会員になりたいのですが、どうすればいいですか？", kana: "すみません、あぷりかいいんになりたいのですが、どうすればいいですか？", zh: "不好意思,我想成為App會員,該怎麼做呢？" },
+          { speaker: "staff", jp: "スマートフォンでスターバックスのアプリをダウンロードしていただければ、簡単にご登録いただけます。", kana: "すまーとふぉんですたーばっくすのあぷりをだうんろーどしていただければ、かんたんにごとうろくいただけます。", zh: "只要在手機上下載星巴克的App,就可以簡單完成註冊。" },
+          { speaker: "customer", jp: "登録は今からでもできますか？", kana: "とうろくはいまからでもできますか？", zh: "現在馬上就可以註冊嗎？" },
+          { speaker: "staff", jp: "はい、できます。アプリでご注文すると、ポイントも貯まりやすくなります。", kana: "はい、できます。あぷりでごちゅうもんすると、ぽいんともたまりやすくなります。", zh: "可以的,如果用App點餐,點數也比較容易累積。" },
+          { speaker: "customer", jp: "ポイントは何に使えますか？", kana: "ぽいんとはなににつかえますか？", zh: "點數可以用來做什麼呢？" },
+          { speaker: "staff", jp: "一定数貯まりますと、無料のドリンクなどに交換できます。", kana: "いっていすうたまりますと、むりょうのどりんくなどにこうかんできます。", zh: "累積到一定數量後,可以兌換免費飲料等獎勵。" },
+          { speaker: "customer", jp: "それは嬉しいですね。今回の注文もアプリに反映できますか？", kana: "それはうれしいですね。こんかいのちゅうもんもあぷりにはんえいできますか？", zh: "那真不錯呢,這次的訂單也可以記入App裡嗎？" },
+          { speaker: "staff", jp: "申し訳ございませんが、店頭でのご注文後にアプリへポイントを反映することはできません。次回からアプリでのご注文をお願いいたします。", kana: "もうしわけございませんが、てんとうでのごちゅうもんごにあぷりへぽいんとをはんえいすることはできません。じかいからあぷりでのごちゅうもんをおねがいいたします。", zh: "非常抱歉,在現場點餐之後沒辦法把點數記到App裡,下次開始麻煩您用App點餐。" },
+          { speaker: "customer", jp: "わかりました、次回から試してみます。", kana: "わかりました、じかいからためしてみます。", zh: "了解了,我下次開始試試看。" },
+          { speaker: "staff", jp: "ありがとうございます。ご登録、お待ちしております。", kana: "ありがとうございます。ごとうろく、おまちしております。", zh: "謝謝您,期待您完成註冊。" },
+        ],
+      },
+      {
+        label: "情境四：收據與發票需求",
+        items: [
+          { speaker: "customer", jp: "すみません、領収書をいただけますか？", kana: "すみません、りょうしゅうしょをいただけますか？", zh: "不好意思,可以給我收據嗎？" },
+          { speaker: "staff", jp: "かしこまりました。レシートとは別に、領収書もご用意できます。宛名はどのようにいたしましょうか。", kana: "かしこまりました。れしーととはべつに、りょうしゅうしょもごよういできます。あてなはどのようにいたしましょうか。", zh: "好的,除了一般收據之外,也可以為您準備收據,請問抬頭要怎麼填寫呢？" },
+          { speaker: "customer", jp: "上様でお願いします。", kana: "うえさまでおねがいします。", zh: "抬頭請寫「上様」就好。" },
+          { speaker: "staff", jp: "承知いたしました。少々お待ちくださいませ。", kana: "しょうちいたしました。しょうしょうおまちくださいませ。", zh: "了解了,請稍候。" },
+          { speaker: "staff", jp: "お待たせいたしました。こちらが領収書でございます。", kana: "おまたせいたしました。こちらがりょうしゅうしょでございます。", zh: "讓您等候了,這是您的收據。" },
+          { speaker: "customer", jp: "ありがとうございます。日付も入っていますか？", kana: "ありがとうございます。ひづけもはいっていますか？", zh: "謝謝你,有附上日期嗎？" },
+          { speaker: "staff", jp: "はい、本日の日付が記載されております。", kana: "はい、ほんじつのひづけがきさいされております。", zh: "有的,上面有記載今天的日期。" },
+          { speaker: "customer", jp: "助かります。会社名を入れることもできますか？", kana: "たすかります。かいしゃめいをいれることもできますか？", zh: "太好了,也可以填上公司名稱嗎？" },
+          { speaker: "staff", jp: "はい、可能でございます。会社名をお伝えいただけますでしょうか。", kana: "はい、かのうでございます。かいしゃめいをおつたえいただけますでしょうか。", zh: "可以的,沒問題,可以告訴我公司名稱嗎？" },
+          { speaker: "customer", jp: "株式会社山田商事でお願いします。", kana: "かぶしきがいしゃやまだしょうじでおねがいします。", zh: "請寫「山田商事股份有限公司」。" },
+          { speaker: "staff", jp: "承知いたしました。修正いたしましたので、こちらをご確認くださいませ。", kana: "しょうちいたしました。しゅうせいいたしましたので、こちらをごかくにんくださいませ。", zh: "了解了,已經修改好了,請您確認一下。" },
+          { speaker: "customer", jp: "確認しました、問題ありません。ありがとうございます。", kana: "かくにんしました、もんだいありません。ありがとうございます。", zh: "我確認過了,沒有問題,謝謝你。" },
+        ],
+      },
+    ],
+  },
+  seating: {
+    label: "內用設施",
+    scenarios: [
+      {
+        label: "情境一：詢問座位",
+        items: [
+          { speaker: "customer", jp: "すみません、店内に席はありますか？", kana: "すみません、てんないにせきはありますか？", zh: "不好意思,店內有座位嗎？" },
+          { speaker: "staff", jp: "申し訳ございません、ただいま満席となっております。", kana: "もうしわけございません、ただいままんせきとなっております。", zh: "非常抱歉,現在已經客滿了。" },
+          { speaker: "customer", jp: "どのくらいで席が空きますか？", kana: "どのくらいでせきがあきますか？", zh: "大概多久會有空位呢？" },
+          { speaker: "staff", jp: "十五分ほどお待ちいただければ、お席をご案内できるかと存じます。", kana: "じゅうごふんほどおまちいただければ、おせきをごあんないできるかとぞんじます。", zh: "大概等十五分鐘左右,應該就可以為您安排座位。" },
+          { speaker: "customer", jp: "わかりました、待ちます。カウンター席はありますか？", kana: "わかりました、まちます。かうんたーせきはありますか？", zh: "好的,我等。有吧台座位嗎？" },
+          { speaker: "staff", jp: "はい、カウンター席は奥にございます。そちらでしたら、間もなく空く見込みでございます。", kana: "はい、かうんたーせきはおくにございます。そちらでしたら、まもなくあくみこみでございます。", zh: "有的,吧台座位在裡面,那裡的話應該很快就會有空位。" },
+          { speaker: "customer", jp: "それでお願いします。テラス席もありますか？", kana: "それでおねがいします。てらすせきもありますか？", zh: "那就麻煩了,也有露天座位嗎？" },
+          { speaker: "staff", jp: "はい、店外にテラス席もございます。本日は天気が良いので、人気でございます。", kana: "はい、てんがいにてらすせきもございます。ほんじつはてんきがいいので、にんきでございます。", zh: "有的,店外也有露天座位,今天天氣很好,很受歡迎。" },
+          { speaker: "customer", jp: "それも気になりますが、今回はカウンター席で大丈夫です。", kana: "それもきになりますが、こんかいはかうんたーせきでだいじょうぶです。", zh: "那也讓我有點心動,但這次吧台座位就可以了。" },
+          { speaker: "staff", jp: "承知いたしました。お席が空きましたら、お呼びいたします。", kana: "しょうちいたしました。おせきがあきましたら、およびいたします。", zh: "了解了,座位有空的時候,我們會叫您。" },
+          { speaker: "customer", jp: "ありがとうございます、よろしくお願いします。", kana: "ありがとうございます、よろしくおねがいします。", zh: "謝謝你,麻煩你了。" },
+        ],
+      },
+      {
+        label: "情境二：Wi-Fi與插座",
+        items: [
+          { speaker: "customer", jp: "すみません、店内のWi-Fiは使えますか？", kana: "すみません、てんないのわいふぁいはつかえますか？", zh: "不好意思,店內的Wi-Fi可以使用嗎？" },
+          { speaker: "staff", jp: "はい、無料のWi-Fiをご利用いただけます。接続方法はこちらに記載されております。", kana: "はい、むりょうのわいふぁいをごりよういただけます。せつぞくほうほうはこちらにきさいされております。", zh: "可以的,有提供免費Wi-Fi,連線方式記載在這裡。" },
+          { speaker: "customer", jp: "ありがとうございます。パスワードは必要ですか？", kana: "ありがとうございます。ぱすわーどはひつようですか？", zh: "謝謝你,需要密碼嗎？" },
+          { speaker: "staff", jp: "いえ、パスワードは不要でございます。表示される利用規約に同意していただければ、ご利用いただけます。", kana: "いえ、ぱすわーどはふようでございます。ひょうじされるりようきやくにどういしていただければ、ごりよういただけます。", zh: "不用,不需要密碼,只要同意顯示出來的使用條款,就可以使用了。" },
+          { speaker: "customer", jp: "わかりました。それと、電源を使える席はありますか？", kana: "わかりました。それと、でんげんをつかえるせきはありますか？", zh: "了解了,另外,有可以使用插座的座位嗎？" },
+          { speaker: "staff", jp: "はい、窓際の席に電源がございます。", kana: "はい、まどぎわのせきにでんげんがございます。", zh: "有的,窗邊的座位有插座。" },
+          { speaker: "customer", jp: "そちらの席は空いていますか？", kana: "そちらのせきはあいていますか？", zh: "那邊的座位有空著嗎？" },
+          { speaker: "staff", jp: "確認いたします。少々お待ちくださいませ。", kana: "かくにんいたします。しょうしょうおまちくださいませ。", zh: "我來確認一下,請稍候。" },
+          { speaker: "staff", jp: "お待たせいたしました。窓際のお席が一つ空いております。", kana: "おまたせいたしました。まどぎわのおせきがひとつあいております。", zh: "讓您等候了,窗邊有一個座位是空著的。" },
+          { speaker: "customer", jp: "それでお願いします、ありがとうございます。", kana: "それでおねがいします、ありがとうございます。", zh: "那就麻煩了,謝謝你。" },
+          { speaker: "staff", jp: "ご案内いたします。こちらへどうぞ。", kana: "ごあんないいたします。こちらへどうぞ。", zh: "我為您帶位,請往這邊走。" },
+        ],
+      },
+      {
+        label: "情境三：自備環保杯與吸管",
+        items: [
+          { speaker: "customer", jp: "すみません、マイカップを持ってきたのですが、使えますか？", kana: "すみません、まいかっぷをもってきたのですが、つかえますか？", zh: "不好意思,我帶了自己的杯子,可以使用嗎？" },
+          { speaker: "staff", jp: "はい、ご利用いただけます。カップを見せていただけますか。", kana: "はい、ごりよういただけます。かっぷをみせていただけますか。", zh: "可以的,可以給我看一下杯子嗎？" },
+          { speaker: "customer", jp: "こちらです。", kana: "こちらです。", zh: "在這裡。" },
+          { speaker: "staff", jp: "ありがとうございます。問題ございません。マイカップをご利用の場合、少しお安くなります。", kana: "ありがとうございます。もんだいございません。まいかっぷをごりようのばあい、すこしおやすくなります。", zh: "謝謝您,沒有問題,使用自備杯子的話,可以稍微便宜一點。" },
+          { speaker: "customer", jp: "それは嬉しいです。マイタンブラーも同じですか？", kana: "それはうれしいです。まいたんぶらーもおなじですか？", zh: "那真不錯,自備隨行杯也一樣嗎？" },
+          { speaker: "staff", jp: "はい、同様にご利用いただけます。", kana: "はい、どうように ごりよういただけます。", zh: "是的,也可以同樣使用。" },
+          { speaker: "customer", jp: "それと、紙ストローではなくて、ストローなしでも大丈夫ですか？", kana: "それと、かみすとろーではなくて、すとろーなしでもだいじょうぶですか？", zh: "另外,不要紙吸管,不附吸管也可以嗎？" },
+          { speaker: "staff", jp: "もちろんでございます。ストローが不要な場合は、お申し付けくださいませ。", kana: "もちろんでございます。すとろーがふようなばあいは、おもうしつけくださいませ。", zh: "當然可以,如果不需要吸管的話,請告訴我們。" },
+          { speaker: "customer", jp: "わかりました、今回はストローなしでお願いします。", kana: "わかりました、こんかいはすとろーなしでおねがいします。", zh: "了解了,這次請不要附吸管。" },
+          { speaker: "staff", jp: "承知いたしました。環境にご協力いただき、ありがとうございます。", kana: "しょうちいたしました。かんきょうにごきょうりょくいただき、ありがとうございます。", zh: "了解了,謝謝您對環保的配合。" },
+        ],
+      },
+      {
+        label: "情境四：外帶餐具與包裝",
+        items: [
+          { speaker: "customer", jp: "持ち帰りでお願いします。袋はいただけますか？", kana: "もちかえりでおねがいします。ふくろはいただけますか？", zh: "我要外帶,可以給我袋子嗎？" },
+          { speaker: "staff", jp: "かしこまりました。紙袋でよろしいでしょうか。", kana: "かしこまりました。かみぶくろでよろしいでしょうか。", zh: "好的,紙袋可以嗎？" },
+          { speaker: "customer", jp: "はい、それでお願いします。フードも一緒に入れていただけますか？", kana: "はい、それでおねがいします。ふーどもいっしょにいれていただけますか？", zh: "是的,那樣就可以了,點心也可以一起放進去嗎？" },
+          { speaker: "staff", jp: "はい、こぼれないよう、別々の袋に入れさせていただきます。", kana: "はい、こぼれないよう、べつべつのふくろにいれさせていただきます。", zh: "可以的,為了避免溢出,我會分開放進不同的袋子裡。" },
+          { speaker: "customer", jp: "ありがとうございます。フォークやナプキンも入れていただけますか？", kana: "ありがとうございます。ふぉーくやなぷきんもいれていただけますか？", zh: "謝謝你,也可以放叉子和餐巾紙嗎？" },
+          { speaker: "staff", jp: "もちろんでございます。何名様分、お入れいたしましょうか。", kana: "もちろんでございます。なんめいさまぶん、おいれいたしましょうか。", zh: "當然可以,請問要放幾人份呢？" },
+          { speaker: "customer", jp: "二名分お願いします。", kana: "にめいぶんおねがいします。", zh: "請給我兩人份。" },
+          { speaker: "staff", jp: "承知いたしました。ドリンクのキャリーもご用意いたしましょうか。", kana: "しょうちいたしました。どりんくのきゃりーもごよういいたしましょうか。", zh: "了解了,也要為您準備飲料提袋嗎？" },
+          { speaker: "customer", jp: "お願いします、ドリンクは二つあります。", kana: "おねがいします、どりんくはふたつあります。", zh: "麻煩你了,飲料有兩杯。" },
+          { speaker: "staff", jp: "かしこまりました。こちらにすべてお入れいたしました。お気をつけてお持ちくださいませ。", kana: "かしこまりました。こちらにすべておいれいたしました。おきをつけておもちくださいませ。", zh: "好的,全部都放進這裡了,請小心拿好。" },
+          { speaker: "customer", jp: "ありがとうございます、助かります。", kana: "ありがとうございます、たすかります。", zh: "謝謝你,幫了大忙。" },
+        ],
+      },
+    ],
+  },
+  trouble: {
+    label: "服務狀況",
+    scenarios: [
+      {
+        label: "情境一：點餐確認與更正",
+        items: [
+          { speaker: "customer", jp: "すみません、注文を間違えてしまいました。", kana: "すみません、ちゅうもんをまちがえてしまいました。", zh: "不好意思,我點錯餐了。" },
+          { speaker: "staff", jp: "大丈夫でございます。どのように変更いたしましょうか。", kana: "だいじょうぶでございます。どのようにへんこういたしましょうか。", zh: "沒問題的,請問要怎麼修改呢？" },
+          { speaker: "customer", jp: "アイスではなく、ホットにしたかったのですが。", kana: "あいすではなく、ほっとにしたかったのですが。", zh: "我原本想要的是熱的,不是冰的。" },
+          { speaker: "staff", jp: "かしこまりました。まだお作りしておりませんので、すぐに変更いたします。", kana: "かしこまりました。まだおつくりしておりませんので、すぐにへんこういたします。", zh: "好的,因為還沒有開始製作,我馬上幫您修改。" },
+          { speaker: "customer", jp: "ありがとうございます、助かります。", kana: "ありがとうございます、たすかります。", zh: "謝謝你,幫了大忙。" },
+          { speaker: "staff", jp: "いえいえ、すぐに対応させていただきます。サイズはトールのままでよろしいでしょうか。", kana: "いえいえ、すぐにたいおうさせていただきます。さいずはとーるのままでよろしいでしょうか。", zh: "不會不會,馬上為您處理,尺寸維持中杯就可以嗎？" },
+          { speaker: "customer", jp: "はい、サイズは変えなくて大丈夫です。", kana: "はい、さいずはかえなくてだいじょうぶです。", zh: "是的,尺寸不用改沒關係。" },
+          { speaker: "staff", jp: "承知いたしました。修正いたしましたので、少々お待ちくださいませ。", kana: "しょうちいたしました。しゅうせいいたしましたので、しょうしょうおまちくださいませ。", zh: "了解了,已經修改好了,請稍候一下。" },
+          { speaker: "customer", jp: "わかりました、ありがとうございます。", kana: "わかりました、ありがとうございます。", zh: "好的,謝謝你。" },
+          { speaker: "staff", jp: "お待たせいたしました。ホットのカフェラテでございます。", kana: "おまたせいたしました。ほっとのかふぇらてでございます。", zh: "讓您等候了,這是熱的咖啡拿鐵。" },
+          { speaker: "customer", jp: "ありがとうございます、これで合っています。", kana: "ありがとうございます、これであっています。", zh: "謝謝你,這個是對的。" },
+        ],
+      },
+      {
+        label: "情境二：商品售完與候位",
+        items: [
+          { speaker: "customer", jp: "すみません、季節限定のドリンクは今でも買えますか？", kana: "すみません、きせつげんていのどりんくはいまでもかえますか？", zh: "不好意思,季節限定的飲料現在還可以買到嗎？" },
+          { speaker: "staff", jp: "申し訳ございませんが、本日分は売り切れとなっております。", kana: "もうしわけございませんが、ほんじつぶんはうりきれとなっております。", zh: "非常抱歉,今天的份已經賣完了。" },
+          { speaker: "customer", jp: "そうですか、残念です。いつ頃また入荷しますか？", kana: "そうですか、ざんねんです。いつごろまたにゅうかしますか？", zh: "這樣啊,真可惜,大概什麼時候會再進貨呢？" },
+          { speaker: "staff", jp: "明日の朝には入荷する見込みでございます。", kana: "あしたのあさにはにゅうかするみこみでございます。", zh: "預計明天早上會進貨。" },
+          { speaker: "customer", jp: "わかりました、明日また来てみます。他のおすすめはありますか？", kana: "わかりました、あしたまたきてみます。ほかのおすすめはありますか？", zh: "了解了,明天我再來看看,有其他推薦的嗎？" },
+          { speaker: "staff", jp: "フラペチーノも人気がございます。よろしければそちらはいかがでしょうか。", kana: "ふらぺちーのもにんきがございます。よろしければそちらはいかがでしょうか。", zh: "星冰樂也很受歡迎,如果方便的話,要不要試試那個呢？" },
+          { speaker: "customer", jp: "それでは、それをいただきます。", kana: "それでは、それをいただきます。", zh: "那麼,我就點那個。" },
+          { speaker: "staff", jp: "ありがとうございます。少しお待ちいただく可能性がございますが、よろしいでしょうか。", kana: "ありがとうございます。すこしおまちいただくかのうせいがございますが、よろしいでしょうか。", zh: "謝謝您,可能需要稍微等候一下,這樣可以嗎？" },
+          { speaker: "customer", jp: "大丈夫です、待ちます。", kana: "だいじょうぶです、まちます。", zh: "沒問題,我等。" },
+          { speaker: "staff", jp: "ありがとうございます。出来上がりましたら、お呼びいたします。", kana: "ありがとうございます。できあがりましたら、およびいたします。", zh: "謝謝您,做好後我們會叫您。" },
+        ],
+      },
+      {
+        label: "情境三：飲品問題反映",
+        items: [
+          { speaker: "customer", jp: "すみません、このドリンク、注文したものと違うようです。", kana: "すみません、このどりんく、ちゅうもんしたものとちがうようです。", zh: "不好意思,這個飲料好像跟我點的不一樣。" },
+          { speaker: "staff", jp: "大変申し訳ございません。確認させていただきます。どのようなご注文でしたでしょうか。", kana: "たいへんもうしわけございません。かくにんさせていただきます。どのようなごちゅうもんでしたでしょうか。", zh: "非常抱歉,我來確認一下,請問您當時點的是什麼呢？" },
+          { speaker: "customer", jp: "豆乳のラテをお願いしたのですが、これは普通の牛乳のようです。", kana: "とうにゅうのらてをおねがいしたのですが、これはふつうのぎゅうにゅうのようです。", zh: "我點的是豆漿拿鐵,但這個好像是一般的牛奶。" },
+          { speaker: "staff", jp: "確認いたしました。大変申し訳ございませんでした。すぐに作り直しいたします。", kana: "かくにんいたしました。たいへんもうしわけございませんでした。すぐにつくりなおしいたします。", zh: "已經確認過了,真的非常抱歉,我們馬上重新製作。" },
+          { speaker: "customer", jp: "お願いします。", kana: "おねがいします。", zh: "麻煩你了。" },
+          { speaker: "staff", jp: "お待たせいたしました。豆乳のラテでございます。改めてお詫び申し上げます。", kana: "おまたせいたしました。とうにゅうのらてでございます。あらためてお詫びもうしあげます。", zh: "讓您等候了,這是豆漿拿鐵,再次向您致歉。" },
+          { speaker: "customer", jp: "ありがとうございます、こちらで合っています。", kana: "ありがとうございます、こちらであっています。", zh: "謝謝你,這個是對的。" },
+          { speaker: "staff", jp: "ご不便をおかけし、申し訳ございませんでした。お詫びにクーポンをお渡しさせていただきます。", kana: "ごふべんをおかけし、もうしわけございませんでした。おわびにくーぽんをおわたしさせていただきます。", zh: "造成您的不便,真的很抱歉,作為賠罪,送您一張優惠券。" },
+          { speaker: "customer", jp: "そこまでしていただかなくても大丈夫ですよ。", kana: "そこまでしていただかなくてもだいじょうぶですよ。", zh: "不用做到那個程度也沒關係的。" },
+          { speaker: "staff", jp: "いえ、私どもの不手際でございますので、ぜひお受け取りくださいませ。", kana: "いえ、わたくしどものふてぎわでございますので、ぜひおうけとりくださいませ。", zh: "不,這是我們的疏失,請務必收下。" },
+        ],
+      },
+      {
+        label: "情境四：集點活動與優惠券問題",
+        items: [
+          { speaker: "customer", jp: "すみません、このクーポンは使えますか？", kana: "すみません、このくーぽんはつかえますか？", zh: "不好意思,這張優惠券可以使用嗎？" },
+          { speaker: "staff", jp: "確認いたします。少々お待ちくださいませ。", kana: "かくにんいたします。しょうしょうおまちくださいませ。", zh: "我來確認一下,請稍候。" },
+          { speaker: "staff", jp: "お待たせいたしました。申し訳ございませんが、このクーポンは期限が切れております。", kana: "おまたせいたしました。もうしわけございませんが、このくーぽんはきげんがきれております。", zh: "讓您等候了,非常抱歉,這張優惠券已經過期了。" },
+          { speaker: "customer", jp: "そうですか、知りませんでした。他に使えるキャンペーンはありますか？", kana: "そうですか、しりませんでした。ほかにつかえるきゃんぺーんはありますか？", zh: "這樣啊,我不知道,有其他可以用的活動嗎？" },
+          { speaker: "staff", jp: "はい、現在アプリ限定のキャンペーンを実施しております。", kana: "はい、げんざいあぷりげんていのきゃんぺーんをじっししております。", zh: "有的,現在有App限定的活動正在進行。" },
+          { speaker: "customer", jp: "それはどのような内容ですか？", kana: "それはどのようなないようですか？", zh: "那是什麼樣的內容呢？" },
+          { speaker: "staff", jp: "ドリンクを二つご注文いただくと、一つ無料になるキャンペーンでございます。", kana: "どりんくをふたつごちゅうもんいただくと、ひとつむりょうになるきゃんぺーんでございます。", zh: "是只要點兩杯飲料,就有一杯免費的活動。" },
+          { speaker: "customer", jp: "それはいいですね、それでお願いできますか？", kana: "それはいいですね、それでおねがいできますか？", zh: "那很不錯呢,可以用那個方式幫我點嗎？" },
+          { speaker: "staff", jp: "申し訳ございませんが、アプリでのご注文に限られておりますので、店頭では適用できません。", kana: "もうしわけございませんが、あぷりでのごちゅうもんにかぎられておりますので、てんとうではてきようできません。", zh: "非常抱歉,因為僅限App點餐才能使用,在現場無法套用。" },
+          { speaker: "customer", jp: "わかりました、次回アプリで試してみます。", kana: "わかりました、じかいあぷりでためしてみます。", zh: "了解了,下次我用App試試看。" },
+          { speaker: "staff", jp: "ありがとうございます。ご不便をおかけし、申し訳ございませんでした。", kana: "ありがとうございます。ごふべんをおかけし、もうしわけございませんでした。", zh: "謝謝您,造成您的不便,真的很抱歉。" },
+        ],
+      },
+    ],
+  },
+};
+const PHRASE_KEYS = Object.keys(PHRASE_DATA);
+let currentPhraseScene = "order";
+let currentScenarioIndex = 0;
+
+</script>
+<script>
+const CAT_KEYS = Object.keys(VOCAB_DATA);
+let currentCat = "order";
+let currentMode = "ref";        // "ref" | "study"
+let refSubMode = "lookup";      // "lookup" | "confuse"
+let studySubMode = "memorize";  // "memorize" | "quiz"
+
+let studyOrder = [];
+let studyIndex = 0;
+let isFlipped = false;
+
+let quizQueue = [];
+let quizIndex = 0;
+let quizScore = 0;
+let quizAnswered = false;
+let quizDirection = "jp2zh"; // "jp2zh" | "zh2jp"
+let autoAdvanceTimer = null;
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function refreshCatTabbarVisibility() {
+  const needsCat = (currentMode === 'ref' && refSubMode === 'lookup') ||
+                    (currentMode === 'study' && (studySubMode === 'memorize' || studySubMode === 'quiz'));
+  document.getElementById('catTabbar').style.display = needsCat ? 'flex' : 'none';
+}
+
+function refreshDirectionToggleVisibility() {
+  const showToggle = currentMode === 'study' && studySubMode === 'quiz';
+  document.getElementById('directionToggleBtn').style.display = showToggle ? 'inline-block' : 'none';
+}
+
+/* ---------- top-level mode tabs ---------- */
+document.querySelectorAll('#modeTabbar .tab-item').forEach(tab => {
+  tab.addEventListener('click', () => {
+    stopPlayAll();
+    document.querySelectorAll('#modeTabbar .tab-item').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentMode = tab.dataset.mode;
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + currentMode).classList.add('active');
+
+    refreshCatTabbarVisibility();
+    refreshDirectionToggleVisibility();
+    enterCurrentMode();
+  });
+});
+
+/* ---------- inner sub-mode tabs ---------- */
+document.getElementById('refInnerTabbar').addEventListener('click', (e) => {
+  const item = e.target.closest('.inner-tab-item');
+  if (!item) return;
+  document.querySelectorAll('#refInnerTabbar .inner-tab-item').forEach(t => t.classList.remove('active'));
+  item.classList.add('active');
+  refSubMode = item.dataset.submode;
+  document.querySelectorAll('#view-ref .inner-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('ref-' + refSubMode).classList.add('active');
+  refreshCatTabbarVisibility();
+  enterCurrentMode();
+});
+
+document.getElementById('studyInnerTabbar').addEventListener('click', (e) => {
+  const item = e.target.closest('.inner-tab-item');
+  if (!item) return;
+  document.querySelectorAll('#studyInnerTabbar .inner-tab-item').forEach(t => t.classList.remove('active'));
+  item.classList.add('active');
+  studySubMode = item.dataset.submode;
+  document.querySelectorAll('#view-study .inner-view').forEach(v => v.classList.remove('active'));
+  document.getElementById('study-' + studySubMode).classList.add('active');
+  refreshCatTabbarVisibility();
+  refreshDirectionToggleVisibility();
+  enterCurrentMode();
+});
+
+/* ---------- dispatch ---------- */
+function enterCurrentMode() {
+  if (currentMode === 'ref') {
+    if (refSubMode === 'lookup') renderRef();
+    if (refSubMode === 'confuse') renderConfuse();
+  } else if (currentMode === 'study') {
+    if (studySubMode === 'memorize') initStudy();
+    if (studySubMode === 'quiz') initQuiz();
+  } else if (currentMode === 'phrase') {
+    renderPhrase();
+  }
+}
+
+/* ---------- category sub-tabs ---------- */
+function buildCatTabs() {
+  const bar = document.getElementById('catTabbar');
+  bar.innerHTML = '';
+  CAT_KEYS.forEach(key => {
+    const cat = VOCAB_DATA[key];
+    const el = document.createElement('div');
+    el.className = 'subtab-item' + (key === currentCat ? ' active' : '');
+    el.textContent = cat.label;
+    el.addEventListener('click', () => {
+      currentCat = key;
+      buildCatTabs();
+      enterCurrentMode();
+    });
+    bar.appendChild(el);
+  });
+}
+
+/* ================= REF (速査表) ================= */
+let currentShapeFilter = "all";
+
+const SHAPE_LABELS = {
+  all: "全部",
+  size: "杯型尺寸",
+  temp: "溫度",
+};
+
+function getRefItems() {
+  const cat = VOCAB_DATA[currentCat];
+  if (currentShapeFilter === "all") return cat.items;
+  return cat.items.filter(it => it.shape === currentShapeFilter);
+}
+
+function renderShapeFilter() {
+  const cat = VOCAB_DATA[currentCat];
+  const row = document.getElementById('shapeFilterRow');
+  const shapesPresent = [...new Set(cat.items.filter(it => it.shape).map(it => it.shape))];
+
+  if (shapesPresent.length === 0) {
+    row.style.display = 'none';
+    row.innerHTML = '';
+    return;
+  }
+
+  row.style.display = 'flex';
+  row.innerHTML = '';
+  const options = ["all", ...shapesPresent];
+  options.forEach(key => {
+    const pill = document.createElement('div');
+    pill.className = 'shape-filter-item' + (key === currentShapeFilter ? ' active' : '');
+    pill.textContent = SHAPE_LABELS[key] || key;
+    pill.addEventListener('click', () => {
+      currentShapeFilter = key;
+      renderShapeFilter();
+      renderRef(true);
+    });
+    row.appendChild(pill);
+  });
+}
+
+function renderRef(keepFilter) {
+  if (!keepFilter) currentShapeFilter = "all";
+  renderShapeFilter();
+
+  const items = getRefItems();
+  const grid = document.getElementById('refGrid');
+  grid.innerHTML = '';
+  items.forEach((item) => {
+    const cell = document.createElement('div');
+    cell.className = 'ref-cell';
+    cell.innerHTML = `<span class="ref-cell-jp">${item.jp}</span>`;
+    cell.addEventListener('click', () => {
+      const revealed = cell.classList.toggle('revealed');
+      cell.innerHTML = revealed
+        ? `<span class="ref-cell-kana">${item.kana}</span><span class="ref-cell-zh">${item.zh}</span>`
+        : `<span class="ref-cell-jp">${item.jp}</span>`;
+    });
+    grid.appendChild(cell);
+  });
+}
+
+/* ================= STUDY ================= */
+function initStudy() {
+  const cat = VOCAB_DATA[currentCat];
+  studyOrder = cat.items.map((_, i) => i);
+  studyIndex = 0;
+  isFlipped = false;
+  renderStudyCard();
+}
+
+function renderStudyCard() {
+  const cat = VOCAB_DATA[currentCat];
+  const item = cat.items[studyOrder[studyIndex]];
+  isFlipped = false;
+
+  document.getElementById('cardJp').textContent = item.jp;
+  document.getElementById('cardKana').textContent = item.kana;
+  document.getElementById('cardZh').textContent = '';
+  document.getElementById('cardHint').textContent = '點擊卡片看中文';
+
+  const pos = studyIndex + 1;
+  const total = studyOrder.length;
+  document.getElementById('cardIndexTag').textContent = `${pos} / ${total}`;
+  document.getElementById('navCounter').textContent = `${pos} / ${total}`;
+}
+
+document.getElementById('flashcard').addEventListener('click', () => {
+  const cat = VOCAB_DATA[currentCat];
+  const item = cat.items[studyOrder[studyIndex]];
+  isFlipped = !isFlipped;
+  document.getElementById('cardZh').textContent = isFlipped ? item.zh : '';
+  document.getElementById('cardHint').textContent = isFlipped ? '點擊卡片隱藏中文' : '點擊卡片看中文';
+});
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+  studyIndex = (studyIndex + 1) % studyOrder.length;
+  renderStudyCard();
+});
+document.getElementById('prevBtn').addEventListener('click', () => {
+  studyIndex = (studyIndex - 1 + studyOrder.length) % studyOrder.length;
+  renderStudyCard();
+});
+document.getElementById('shuffleBtn').addEventListener('click', () => {
+  studyOrder = shuffle(studyOrder);
+  studyIndex = 0;
+  renderStudyCard();
+});
+
+/* ================= QUIZ ================= */
+function initQuiz() {
+  const cat = VOCAB_DATA[currentCat];
+  quizQueue = shuffle(cat.items.map((_, i) => i));
+  quizIndex = 0;
+  quizScore = 0;
+  quizAnswered = false;
+  if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; }
+  document.getElementById('quizContent').style.display = 'block';
+  document.getElementById('quizResultView').style.display = 'none';
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  const cat = VOCAB_DATA[currentCat];
+  const itemIdx = quizQueue[quizIndex];
+  const item = cat.items[itemIdx];
+  quizAnswered = false;
+  if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; }
+
+  const label = document.getElementById('quizQuestionLabel');
+  const kanaEl = document.getElementById('quizKana');
+
+  if (quizDirection === 'jp2zh') {
+    label.textContent = '這個單字的中文意思是？';
+    document.getElementById('quizJp').textContent = item.jp;
+    kanaEl.textContent = item.kana;
+    kanaEl.style.display = '';
+  } else {
+    label.textContent = '這個中文對應的日文是？';
+    document.getElementById('quizJp').textContent = item.zh;
+    kanaEl.textContent = '';
+    kanaEl.style.display = 'none';
+  }
+
+  document.getElementById('quizFeedback').textContent = '';
+  document.getElementById('nextQuestionBtn').disabled = true;
+  document.getElementById('quizProgress').textContent = `第 ${quizIndex + 1} 題 / 共 ${quizQueue.length} 題`;
+
+  const correctAnswer = quizDirection === 'jp2zh' ? item.zh : item.jp;
+  const pool = cat.items
+    .filter((_, i) => i !== itemIdx)
+    .map(x => quizDirection === 'jp2zh' ? x.zh : x.jp);
+  const wrongs = shuffle(pool).slice(0, 3);
+  const options = shuffle([correctAnswer, ...wrongs]);
+
+  const optWrap = document.getElementById('quizOptions');
+  optWrap.innerHTML = '';
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => handleAnswer(btn, opt, correctAnswer));
+    optWrap.appendChild(btn);
+  });
+
+  document.getElementById('scoreText').textContent = `${quizScore} / ${quizIndex}`;
+}
+
+function handleAnswer(btn, chosen, correct) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  document.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
+
+  if (chosen === correct) {
+    btn.classList.add('correct');
+    quizScore++;
+    document.getElementById('quizFeedback').textContent = '答對了';
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.quiz-option').forEach(b => { if (b.textContent === correct) b.classList.add('correct'); });
+    document.getElementById('quizFeedback').textContent = `正確答案：${correct}`;
+  }
+  document.getElementById('scoreText').textContent = `${quizScore} / ${quizIndex + 1}`;
+  document.getElementById('nextQuestionBtn').disabled = false;
+
+  if (chosen === correct) {
+    autoAdvanceTimer = setTimeout(() => {
+      autoAdvanceTimer = null;
+      goToNextQuestion();
+    }, 600);
+  }
+}
+
+function goToNextQuestion() {
+  quizIndex++;
+  if (quizIndex >= quizQueue.length) {
+    showQuizResult();
+  } else {
+    renderQuizQuestion();
+  }
+}
+
+document.getElementById('nextQuestionBtn').addEventListener('click', () => {
+  if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; }
+  goToNextQuestion();
+});
+
+document.getElementById('directionToggleBtn').addEventListener('click', (e) => {
+  quizDirection = quizDirection === 'jp2zh' ? 'zh2jp' : 'jp2zh';
+  e.target.textContent = quizDirection === 'jp2zh' ? '切換為「中→日」' : '切換為「日→中」';
+  initQuiz();
+});
+
+function showQuizResult() {
+  document.getElementById('quizContent').style.display = 'none';
+  document.getElementById('quizResultView').style.display = 'block';
+  const total = quizQueue.length;
+  document.getElementById('finalScore').textContent = `${quizScore} / ${total}`;
+  let msg = '繼續加油，多複習幾次吧';
+  const ratio = quizScore / total;
+  if (ratio === 1) msg = '完美，這個分類已經記熟了';
+  else if (ratio >= 0.8) msg = '很不錯，幾乎全對';
+  else if (ratio >= 0.5) msg = '還可以，再複習一輪會更熟練';
+  document.getElementById('resultMsg').textContent = msg;
+}
+
+document.getElementById('restartBtn').addEventListener('click', initQuiz);
+
+/* ================= CONFUSE ================= */
+function renderConfuse() {
+  const wrap = document.getElementById('confuseList');
+  wrap.innerHTML = '';
+  CONFUSE_GROUPS.forEach(group => {
+    const row = document.createElement('div');
+    row.className = 'confuse-row';
+    const itemsHtml = group.items.map(it =>
+      `<div class="confuse-pill"><span class="k">${it.jp}（${it.kana}）</span><span class="z">${it.zh}</span></div>`
+    ).join('');
+    row.innerHTML = `<div class="confuse-title">${group.title}</div><div class="confuse-items">${itemsHtml}</div>`;
+    wrap.appendChild(row);
+  });
+}
+
+/* ================= PHRASE (常用句) ================= */
+const SPEAKER_LABELS = { staff: "店員", customer: "客人" };
+
+function buildSceneTabs() {
+  const bar = document.getElementById('sceneTabbar');
+  bar.innerHTML = '';
+  PHRASE_KEYS.forEach(key => {
+    const scene = PHRASE_DATA[key];
+    const el = document.createElement('div');
+    el.className = 'scene-tab-item' + (key === currentPhraseScene ? ' active' : '');
+    el.textContent = scene.label;
+    el.addEventListener('click', () => {
+      stopPlayAll();
+      currentPhraseScene = key;
+      currentScenarioIndex = 0;
+      buildSceneTabs();
+      buildScenarioTabs();
+      renderPhraseList();
+    });
+    bar.appendChild(el);
+  });
+}
+
+function buildScenarioTabs() {
+  const scene = PHRASE_DATA[currentPhraseScene];
+  const bar = document.getElementById('scenarioTabbar');
+  bar.innerHTML = '';
+  scene.scenarios.forEach((scenario, i) => {
+    const el = document.createElement('div');
+    el.className = 'scenario-tab-item' + (i === currentScenarioIndex ? ' active' : '');
+    el.textContent = scenario.label;
+    el.addEventListener('click', () => {
+      stopPlayAll();
+      currentScenarioIndex = i;
+      buildScenarioTabs();
+      renderPhraseList();
+    });
+    bar.appendChild(el);
+  });
+}
+
+const SPEAKER_ICON_SVG = `
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+    <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+    <path d="M18 6a8.5 8.5 0 0 1 0 12"></path>
+  </svg>
+`;
+
+function renderPhraseList() {
+  const scene = PHRASE_DATA[currentPhraseScene];
+  const scenario = scene.scenarios[currentScenarioIndex];
+  const list = document.getElementById('phraseList');
+  list.innerHTML = '';
+  scenario.items.forEach((item, idx) => {
+    const row = document.createElement('div');
+    row.className = 'phrase-row ' + item.speaker;
+    row.dataset.index = idx;
+    row.innerHTML = `
+      <span class="speaker-tag">${SPEAKER_LABELS[item.speaker]}</span>
+      <div class="phrase-bubble">
+        <div class="phrase-jp-row">
+          <span class="phrase-jp">${buildFuriganaHTML(item.jp)}</span>
+          <button class="speak-btn" type="button" aria-label="播放發音" title="播放發音">${SPEAKER_ICON_SVG}</button>
+        </div>
+        <div class="phrase-zh">${item.zh}</div>
+      </div>
+    `;
+
+    // 長按（觸控裝置）顯示該漢字詞的假名提示
+    row.querySelectorAll('.furi').forEach(furiEl => {
+      let pressTimer = null;
+      furiEl.addEventListener('touchstart', () => {
+        pressTimer = setTimeout(() => furiEl.classList.add('show-tooltip'), 350);
+      });
+      furiEl.addEventListener('touchend', () => {
+        clearTimeout(pressTimer);
+        setTimeout(() => furiEl.classList.remove('show-tooltip'), 1200);
+      });
+    });
+
+    // 喇叭按鈕：播放日文發音（單句，會中斷全部播放模式）
+    const speakBtn = row.querySelector('.speak-btn');
+    speakBtn.addEventListener('click', () => {
+      stopPlayAll();
+      speakJapanese(item.jp, item.speaker, speakBtn, row);
+    });
+
+    list.appendChild(row);
+  });
+}
+
+/* ---------- 語音設定：店員 / 客人音色區分 ---------- */
+let cachedJaVoices = null;
+
+function getJaVoices() {
+  if (cachedJaVoices && cachedJaVoices.length) return cachedJaVoices;
+  if (!('speechSynthesis' in window)) return [];
+  const all = window.speechSynthesis.getVoices();
+  cachedJaVoices = all.filter(v => v.lang && v.lang.toLowerCase().startsWith('ja'));
+  return cachedJaVoices;
+}
+
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = () => { cachedJaVoices = null; };
+}
+
+// 依說話者套用不同音色／音調／語速，盡量挑選不同的日文語音；
+// 若瀏覽器只提供一種日文語音，則用 pitch 與 rate 製造區別
+function configureUtteranceForSpeaker(utter, speaker) {
+  const voices = getJaVoices();
+  if (voices.length >= 2) {
+    const femaleHint = voices.find(v => /female|女|f\b/i.test(v.name));
+    const maleHint = voices.find(v => /male|男|m\b/i.test(v.name) && v !== femaleHint);
+    if (speaker === 'staff') {
+      utter.voice = femaleHint || voices[0];
+    } else {
+      utter.voice = maleHint || voices[1] || voices[0];
+    }
+  } else if (voices.length === 1) {
+    utter.voice = voices[0];
+  }
+
+  if (speaker === 'staff') {
+    utter.pitch = 1.15;
+    utter.rate = 0.95;
+  } else {
+    utter.pitch = 0.85;
+    utter.rate = 0.97;
+  }
+}
+
+function speakJapanese(text, speaker, btn, row) {
+  if (!('speechSynthesis' in window)) {
+    alert('您的瀏覽器不支援語音播放功能');
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'ja-JP';
+  configureUtteranceForSpeaker(utter, speaker);
+
+  document.querySelectorAll('.speak-btn.playing').forEach(b => b.classList.remove('playing'));
+  if (btn) btn.classList.add('playing');
+  if (row) row.classList.add('speaking');
+
+  utter.onend = () => {
+    if (btn) btn.classList.remove('playing');
+    if (row) row.classList.remove('speaking');
+  };
+  utter.onerror = () => {
+    if (btn) btn.classList.remove('playing');
+    if (row) row.classList.remove('speaking');
+  };
+
+  window.speechSynthesis.speak(utter);
+}
+
+/* ---------- 全部播放（依序播放整個情境） ---------- */
+let playAllActive = false;
+let playAllQueueIndex = 0;
+let playAllAbort = false;
+
+function setPlayAllButtonState(isPlaying) {
+  const btn = document.getElementById('playAllBtn');
+  const icon = document.getElementById('playAllIcon');
+  const label = document.getElementById('playAllLabel');
+  btn.classList.toggle('active', isPlaying);
+  label.textContent = isPlaying ? '停止播放' : '全部播放本情境';
+  icon.innerHTML = isPlaying
+    ? '<rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect>'
+    : '<polygon points="6 4 20 12 6 20 6 4"></polygon>';
+}
+
+function stopPlayAll() {
+  if (!playAllActive) return;
+  playAllAbort = true;
+  playAllActive = false;
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  document.querySelectorAll('.phrase-row.speaking').forEach(r => r.classList.remove('speaking'));
+  document.querySelectorAll('.speak-btn.playing').forEach(b => b.classList.remove('playing'));
+  setPlayAllButtonState(false);
+}
+
+function playAllScenario() {
+  const scene = PHRASE_DATA[currentPhraseScene];
+  const scenario = scene.scenarios[currentScenarioIndex];
+  const items = scenario.items;
+  const rows = Array.from(document.querySelectorAll('#phraseList .phrase-row'));
+
+  playAllActive = true;
+  playAllAbort = false;
+  playAllQueueIndex = 0;
+  setPlayAllButtonState(true);
+
+  function playNext() {
+    if (playAllAbort) return;
+    if (playAllQueueIndex >= items.length) {
+      playAllActive = false;
+      setPlayAllButtonState(false);
+      return;
+    }
+    const item = items[playAllQueueIndex];
+    const row = rows[playAllQueueIndex];
+    const speakBtn = row ? row.querySelector('.speak-btn') : null;
+
+    if (row) {
+      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    if (!('speechSynthesis' in window)) {
+      alert('您的瀏覽器不支援語音播放功能');
+      stopPlayAll();
+      return;
+    }
+
+    const utter = new SpeechSynthesisUtterance(item.jp);
+    utter.lang = 'ja-JP';
+    configureUtteranceForSpeaker(utter, item.speaker);
+
+    document.querySelectorAll('.speak-btn.playing').forEach(b => b.classList.remove('playing'));
+    document.querySelectorAll('.phrase-row.speaking').forEach(r => r.classList.remove('speaking'));
+    if (speakBtn) speakBtn.classList.add('playing');
+    if (row) row.classList.add('speaking');
+
+    utter.onend = () => {
+      if (speakBtn) speakBtn.classList.remove('playing');
+      if (row) row.classList.remove('speaking');
+      playAllQueueIndex++;
+      if (!playAllAbort) {
+        setTimeout(playNext, 350);
+      }
+    };
+    utter.onerror = () => {
+      if (speakBtn) speakBtn.classList.remove('playing');
+      if (row) row.classList.remove('speaking');
+      playAllQueueIndex++;
+      if (!playAllAbort) {
+        setTimeout(playNext, 350);
+      }
+    };
+
+    window.speechSynthesis.speak(utter);
+  }
+
+  playNext();
+}
+
+document.getElementById('playAllBtn').addEventListener('click', () => {
+  if (playAllActive) {
+    stopPlayAll();
+  } else {
+    playAllScenario();
+  }
+});
+
+function renderPhrase() {
+  buildSceneTabs();
+  buildScenarioTabs();
+  renderPhraseList();
+}
+
+document.getElementById('toggleZh').addEventListener('click', (e) => {
+  const isOn = e.target.dataset.on === 'true';
+  e.target.dataset.on = String(!isOn);
+  document.body.classList.toggle('show-zh', !isOn);
+});
+
+/* ---------- theme toggle ---------- */
+const SUN_PATH = `
+  <circle cx="12" cy="12" r="4.5"></circle>
+  <line x1="12" y1="2.5" x2="12" y2="5"></line>
+  <line x1="12" y1="19" x2="12" y2="21.5"></line>
+  <line x1="4.2" y1="4.2" x2="6" y2="6"></line>
+  <line x1="18" y1="18" x2="19.8" y2="19.8"></line>
+  <line x1="2.5" y1="12" x2="5" y2="12"></line>
+  <line x1="19" y1="12" x2="21.5" y2="12"></line>
+  <line x1="4.2" y1="19.8" x2="6" y2="18"></line>
+  <line x1="18" y1="6" x2="19.8" y2="4.2"></line>
+`;
+const MOON_PATH = `<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"></path>`;
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeIcon').innerHTML = theme === 'dark' ? MOON_PATH : SUN_PATH;
+}
+
+const savedTheme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+applyTheme(savedTheme);
+
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+});
+
+/* ---------- init ---------- */
+buildCatTabs();
+renderRef();
+refreshDirectionToggleVisibility();
+
+</script>
+</body>
+</html>
